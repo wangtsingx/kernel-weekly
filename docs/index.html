@@ -13,10 +13,13 @@
       --text-muted: #8B8478;
       --accent: #D97757;
       --accent-soft: #F3EDE8;
+      --accent-darker: #B85C3F;
       --red: #C04A3B;
       --orange: #C97B35;
       --yellow: #B89220;
       --green: #5A7A4A;
+      --code-bg: #F7F6F2;
+      --table-stripe: #FAF9F6;
       --radius: 10px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,7 +27,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.7;
     }
     .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
 
@@ -47,7 +50,7 @@
       border-radius: var(--radius);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     .issue-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(217,119,87,0.12); }
     .issue-card h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
@@ -58,7 +61,7 @@
 
     /* Issue body preview (collapsible) */
     .issue-body {
-      max-height: 200px;
+      max-height: 240px;
       overflow: hidden;
       position: relative;
       border-top: 1px solid var(--border);
@@ -67,17 +70,75 @@
     }
     .issue-body.expanded { max-height: none; }
     .issue-body .fade {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
       background: linear-gradient(transparent, var(--card));
       pointer-events: none;
+      z-index: 1;
     }
     .issue-body.expanded .fade { display: none; }
-    .issue-body pre { white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem; font-family: 'SF Mono', 'Cascadia Code', monospace; }
-    .issue-body img { max-width: 100%; }
+
+    /* Markdown content rendering (GitHub-like) */
+    .md-content { position: relative; }
+    .md-content > *:first-child { margin-top: 0; }
+    .md-content h1 { font-size: 1.6rem; font-weight: 700; margin: 1.5rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+    .md-content h2 { font-size: 1.3rem; font-weight: 600; margin: 1.5rem 0 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    .md-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.2rem 0 0.5rem; color: var(--accent-darker); }
+    .md-content h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent-darker); }
+    .md-content p { margin: 0.5rem 0; }
+    .md-content ul, .md-content ol { margin: 0.5rem 0; padding-left: 1.8rem; }
+    .md-content li { margin: 0.25rem 0; }
+    .md-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 0.5rem 1rem;
+      margin: 0.75rem 0;
+      color: var(--text-muted);
+      background: var(--accent-soft);
+      border-radius: 0 4px 4px 0;
+    }
+    .md-content blockquote p { margin: 0; }
+    .md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .md-content a { color: var(--accent); text-decoration: none; }
+    .md-content a:hover { text-decoration: underline; }
+    .md-content strong { font-weight: 600; }
+    .md-content code {
+      background: var(--code-bg);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+      color: var(--accent-darker);
+    }
+    .md-content pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    .md-content pre code { background: none; padding: 0; border-radius: 0; color: var(--text); font-size: 0.85rem; }
+    .md-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+      display: block;
+      overflow-x: auto;
+    }
+    .md-content table thead tr { background: var(--accent-soft); }
+    .md-content table th, .md-content table td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .md-content table th { font-weight: 600; }
+    .md-content table tbody tr:nth-child(even) { background: var(--table-stripe); }
+    .md-content img { max-width: 100%; border-radius: 4px; }
 
     .expand-btn {
       background: none; border: 1px solid var(--border); color: var(--accent);
-      padding: 0.3rem 1rem; border-radius: 4px; cursor: pointer;
+      padding: 0.3rem 1rem; border-radius: 6px; cursor: pointer;
       font-size: 0.85rem; margin-top: 0.5rem;
     }
     .expand-btn:hover { background: var(--accent-soft); }
@@ -139,19 +200,24 @@
     <p>由 <a href="https://github.com/wangtsingx/kernel-weekly" target="_blank">Multica autopilot</a> 自动生成 · 数据来源 <a href="https://lore.kernel.org" target="_blank">lore.kernel.org</a></p>
   </footer>
 
+  <!-- marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- DOMPurify for XSS prevention -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script>
     const REPO = 'wangtsingx/kernel-weekly';
     const API = `https://api.github.com/repos/${REPO}/issues`;
     let allIssues = [];
 
+    // Configure marked
+    marked.setOptions({ breaks: true, gfm: true });
+
     async function loadIssues() {
       try {
-        // Fetch issues sorted by newest, with label filter optional
         const url = `${API}?state=all&per_page=100&sort=created&direction=desc`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const issues = await res.json();
-        // Filter: only issues (not PRs), containing "周刊" in title
         allIssues = issues.filter(i => !i.pull_request && i.title.includes('周刊'));
 
         if (allIssues.length === 0) {
@@ -160,7 +226,6 @@
           return;
         }
 
-        // Stats
         document.getElementById('stat-count').textContent = allIssues.length;
         const latest = allIssues[0];
         document.getElementById('stat-latest').textContent =
@@ -169,7 +234,7 @@
         renderIssues(allIssues);
       } catch (err) {
         document.getElementById('issue-list').innerHTML =
-          `<div class="empty"><p>加载失败: ${err.message}</p><p style="margin-top:0.5rem;font-size:0.85rem">GitHub API 速率限制可能已触发，请稍后刷新。</p></div>`;
+          '<div class="empty"><p>加载失败: ' + escapeHtml(err.message) + '</p><p style="margin-top:0.5rem;font-size:0.85rem">GitHub API 速率限制可能已触发，请稍后刷新。</p></div>';
       }
     }
 
@@ -177,27 +242,26 @@
       const list = document.getElementById('issue-list');
       list.innerHTML = issues.map(issue => {
         const date = new Date(issue.created_at).toISOString().slice(0, 10);
-        const bodyHtml = escapeHtml(issue.body || '(无内容)');
+        const bodyHtml = renderMarkdown(issue.body || '(无内容)');
         const labels = issue.labels.map(l =>
-          `<span class="label" style="background:#${l.color};color:#${l.color === 'ffffff' ? '000' : 'fff'}">${escapeHtml(l.name)}</span>`
+          '<span class="label" style="background:#' + l.color + ';color:#' + (l.color === 'ffffff' ? '333' : 'fff') + '">' + escapeHtml(l.name) + '</span>'
         ).join(' ');
 
-        return `
-        <div class="issue-card" data-title="${escapeHtml(issue.title).toLowerCase()}" data-body="${bodyHtml.toLowerCase()}">
-          <h2><a href="${issue.html_url}" target="_blank">${escapeHtml(issue.title)}</a></h2>
-          <div class="issue-meta">
-            <span>📅 ${date}</span>
-            <span>👤 ${escapeHtml(issue.user.login)}</span>
-            <span>💬 ${issue.comments}</span>
-            ${labels ? '<span>' + labels + '</span>' : ''}
-            <span>#${issue.number}</span>
-          </div>
-          <div class="issue-body" id="body-${issue.number}">
-            ${renderMarkdown(issue.body || '(无内容)')}
-            <div class="fade"></div>
-          </div>
-          <button class="expand-btn" onclick="toggleBody(${issue.number}, this)">展开全文 ↓</button>
-        </div>`;
+        return '<div class="issue-card" data-title="' + escapeHtml(issue.title.toLowerCase()) + '" data-body="' + escapeHtml((issue.body || '').toLowerCase()) + '">' +
+          '<h2><a href="' + issue.html_url + '" target="_blank">' + escapeHtml(issue.title) + '</a></h2>' +
+          '<div class="issue-meta">' +
+            '<span>📅 ' + date + '</span>' +
+            '<span>👤 ' + escapeHtml(issue.user.login) + '</span>' +
+            '<span>💬 ' + issue.comments + '</span>' +
+            (labels ? '<span>' + labels + '</span>' : '') +
+            '<span>#' + issue.number + '</span>' +
+          '</div>' +
+          '<div class="issue-body" id="body-' + issue.number + '">' +
+            '<div class="md-content">' + bodyHtml + '</div>' +
+            '<div class="fade"></div>' +
+          '</div>' +
+          '<button class="expand-btn" onclick="toggleBody(' + issue.number + ', this)">展开全文 ↓</button>' +
+        '</div>';
       }).join('');
     }
 
@@ -232,39 +296,12 @@
       return div.innerHTML;
     }
 
-    // Minimal markdown renderer (headings, bold, lists, tables, links, code)
     function renderMarkdown(md) {
-      let html = escapeHtml(md);
-      // Code blocks
-      html = html.replace(/```[\s\S]*?```/g, m => '<pre>' + m.replace(/```/g, '') + '</pre>');
-      // Tables
-      html = html.replace(/^(\|.+\|)\n(\|[-: |]+\|)\n((?:\|.+\|\n?)+)/gm, (match, header, sep, rows) => {
-        const th = header.split('|').filter(c => c.trim()).map(c => '<th>' + c.trim() + '</th>').join('');
-        const tds = rows.trim().split('\n').map(row =>
-          '<tr>' + row.split('|').filter(c => c.trim()).map(c => '<td>' + c.trim() + '</td>').join('') + '</tr>'
-        ).join('');
-        return '<table style="width:100%;border-collapse:collapse;margin:0.5rem 0;font-size:0.85rem"><thead><tr>' + th + '</tr></thead><tbody>' + tds + '</tbody></table>';
+      const raw = marked.parse(md);
+      return DOMPurify.sanitize(raw, {
+        ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','hr','ul','ol','li','blockquote','pre','code','a','strong','em','del','table','thead','tbody','tr','th','td','img','span','div','sup'],
+        ALLOWED_ATTR: ['href','src','alt','title','style','colspan','rowspan','target','rel']
       });
-      // Headings
-      html = html.replace(/^### (.+)$/gm, '<h4 style="margin:0.8rem 0 0.4rem;color:var(--accent)">$1</h4>');
-      html = html.replace(/^## (.+)$/gm, '<h3 style="margin:1rem 0 0.5rem;color:var(--accent)">$1</h3>');
-      html = html.replace(/^# (.+)$/gm, '<h2 style="margin:1rem 0 0.5rem">$1</h2>');
-      // Bold
-      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      // Links
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--accent)">$1</a>');
-      // Blockquotes
-      html = html.replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid var(--accent);padding-left:1rem;color:var(--text-muted);margin:0.5rem 0">$1</blockquote>');
-      // Horizontal rule
-      html = html.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">');
-      // Lists
-      html = html.replace(/^- (.+)$/gm, '<li style="margin-left:1.5rem">$1</li>');
-      html = html.replace(/^(\d+)\. (.+)$/gm, '<li style="margin-left:1.5rem">$2</li>');
-      // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code style="background:var(--accent-soft);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.85em;color:var(--accent)">$1</code>');
-      // Line breaks
-      html = html.replace(/\n/g, '<br>\n');
-      return html;
     }
 
     loadIssues();
