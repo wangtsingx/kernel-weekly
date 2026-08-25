@@ -10,377 +10,344 @@
 
 | 指标 | 数量 |
 |------|------|
-| 邮件总数 | 20,316 |
-| 原始帖子（非回复） | 10,261 |
-| 补丁邮件 | 8,929 |
-| Bug 修复补丁 | ~2,024 |
-| 新功能补丁 | ~2,149 |
-| 代码清理/重构 | ~489 |
-| 文档/测试 | ~603 |
-| syzbot 报告 | 156 |
-| CVE 相关 | 3 |
-| 回归报告 | ~58 |
+| 邮件总数 | 20,237 |
+| 原始帖子（非回复） | 10,008 |
+| 补丁邮件 | 8,904 |
+| GIT PULL 请求 | 290 |
+| syzbot 报告 | 246 |
+| CVE 相关 | 3 个（CVE-2025-38616, CVE-2026-64561, CVE-2026-74484） |
+| 回归报告（原始） | 27 |
+| 涉及稳定版分支 | 7 个（5.10, 5.15, 6.1, 6.6, 6.12, 6.18, 7.1） |
 
 ### 各邮件列表分布
 
-| 邮件列表 | 总邮件数 | 原始帖子 | 补丁 |
-|----------|---------|---------|------|
-| linux-kernel | 12,118 | 5,525 | 4,912 |
-| stable | 3,911 | 2,896 | 2,776 |
-| netdev | 1,943 | 836 | 775 |
-| linux-mm | 1,421 | 539 | 470 |
-| linux-pm | 435 | 242 | 223 |
-| linux-block | 282 | 134 | 113 |
-| linux-security-module | 121 | 39 | 36 |
-| regressions | 85 | 21 | 6 |
+| 邮件列表 | 邮件数 |
+|----------|--------|
+| linux-kernel | 12,061 |
+| stable | 3,914 |
+| netdev | 1,940 |
+| linux-mm | 1,398 |
+| linux-pm | 437 |
+| linux-block | 282 |
+| linux-security-module | 120 |
+| regressions | 85 |
 
 ### 子系统补丁分布（估算）
 
 | 子系统 | 补丁数 |
 |--------|--------|
-| 网络 (net/tcp/udp/bluetooth/wifi) | ~1,090 |
-| 内存管理 (mm/memory/hugetlb/slab) | ~598 |
-| GPU/DRM | ~469 |
-| 文件系统 (ext4/xfs/btrfs/f2fs/nfs/smb) | ~454 |
-| USB/HID/Input | ~453 |
-| 调度/性能/BPF | ~322 |
-| 块设备/IO | ~234 |
-| 安全 (selinux/audit/ima) | ~70 |
+| 网络 (net/tcp/udp/bluetooth/wifi/mptcp) | ~3,949 |
+| 内存管理 (mm/hugetlb/slab/mglru) | ~2,432 |
+| 架构 (x86/arm64/riscv/powerpc) | ~2,033 |
+| GPU/DRM | ~1,235 |
+| 调度/BPF/perf/tracing | ~1,331 |
+| 电源/热管理 | ~1,205 |
+| 块设备/NVMe/SCSI | ~834 |
+| 文件系统 (ext4/xfs/btrfs/smb) | ~736 |
+| 测试 | ~795 |
+| USB/HID/Input | ~714 |
+| 安全 (selinux/apparmor/landlock/keys) | ~387 |
+| Rust | ~224 |
 
 ### 本周稳定版发布
 
-| 版本 | 候选 | 补丁数 |
+| 分支 | 版本 | 补丁数 |
 |------|------|--------|
-| 5.10.266 | -rc1 | 235 |
-| 5.15.217 | -rc1 | 272 |
-| 6.1.184 | -rc1 | 303 |
-| 6.6.153 | -rc1/rc2 | 166/160 |
-| 6.12.105 | -rc1 | 220 |
-| 6.18.46 | -rc1 | 217 |
-| 7.1.10 | -rc1 | 228 |
-
-> 本周稳定版维护活跃，7 个稳定分支共发布 RC，合计约 1,601 个补丁被回port。
+| 5.10.y | 5.10.266-rc1 | 235 |
+| 5.15.y | 5.15.217-rc1 | 272 |
+| 6.1.y | 6.1.184-rc1 | 303 |
+| 6.6.y | 6.6.153-rc2 | 160 |
+| 6.12.y | 6.12.105-rc1 | 220 |
+| 6.18.y | 6.18.46-rc1 | 217 |
+| 7.1.y | 7.1.10-rc1 | 228 |
 
 ---
 
 ## 🔴 严重问题
 
-> 本周发现 7 个严重问题，涉及安全漏洞、内核崩溃和数据损坏。
+> 本周发现 10 个严重问题，涉及安全漏洞、内核崩溃和数据损坏
 
-### 1. CVE-2025-38616: TLS ULP 数据消失导致 KASAN 越界访问
-
-- **邮件列表**: linux-kernel / stable
-- **发件人**: Artem Dinaburg (Trail of Bits)
-- **类型**: 安全漏洞 / use-after-free
-- **严重程度**: 🔴 严重
-- **影响子系统**: net/tls
-- **描述**: 内核 TLS (kTLS) 实现中，数据可能在 TLS ULP (Upper Layer Protocol) 处理过程中消失，导致 use-after-free。该漏洞已在 6.6.103+、6.12.43+、6.18+ 和 7.1+ 中修复，但 6.1.y 是唯一仍缺失修复的受支持稳定分支。KASAN v6.1.182 构建可复现此问题。
-- **修复方案**: 两个补丁组合修复：(1) 将 `strp->msg_ready` 从 bitfield 转为 bool 以支持 `WRITE_ONCE()`；(2) 正确处理 TLS ULP 下的数据消失问题。已在 v6.1.183 上验证，1000 轮复现测试通过。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260822000018.48130-1-artem@trailofbits.com/)
-
-### 2. CVE-2026-64561: KVM x86/MMU 过时页表根导致页面错误处理问题
-
+### 1. CVE-2025-38616: TLS ULP 数据丢失（6.1.y 回填修复）
 - **邮件列表**: stable
-- **发件人**: Kenta Akagi
 - **类型**: 安全漏洞
 - **严重程度**: 🔴 严重
-- **影响子系统**: KVM x86/mmu
-- **描述**: KVM x86 MMU 在处理页面错误时，如果根页表被 memslot 更新废止，未正确重试页面错误，可能导致安全问题。该 CVE 的修复涉及 8 个补丁的回port，包含 `is_page_fault_stale()` 前置补丁和 TDP MMU 页面错误处理重构。
-- **修复方案**: 在页面错误处理中检查根页表是否被废止并重试；拆分 TDP MMU 页面错误处理逻辑；检查无效/过时根。此修复也是 CVE-2026-46113 和 CVE-2026-53359 修复的前置依赖。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/stable/20260823230743.1.Ia7e0c4f0c5e3d4a5b6c7d8e9f0a1b2c3d4e5f6a7@git.kernel.org/)
+- **影响子系统**: net/tls
+- **描述**: TLS ULP (Upper Layer Protocol) 层存在数据丢失漏洞。当数据从 TLS ULP 下方消失时（如 TCP 层操作），TLS 层可能读取到无效数据。该漏洞已在 6.6.y（自 6.6.103）、6.12.y（自 6.12.43）、6.18.y 和 7.1.y 中修复，但 6.1.y 是唯一仍缺少修复的支持分支。补丁包含两个提交：一个前提修复（将 `msg_ready` 从位域转换为 `bool` 以支持 `WRITE_ONCE`），以及实际的 CVE 修复。
+- **修复方案**: 回填 Jakub Kicinski 的 `tls: handle data disappearing from under the TLS ULP` 和 Sabrina Dubroca 的 `tls: fix lockless read of strp->msg_ready in ->poll`。已在 KASAN v6.1.182 构建上验证，打了补丁的内核通过了 1,000 轮复现测试。
+- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260822000018.48130-1-artem@trailofbits.com/)
+
+### 2. CVE-2026-64561: KVM x86 MMU 页面错误重试缺陷（5.15.y 回填修复）
+- **邮件列表**: stable
+- **类型**: 安全漏洞
+- **严重程度**: 🔴 严重
+- **影响子系统**: KVM x86 MMU
+- **描述**: KVM x86 MMU 在处理页面错误时未正确检查根是否被 memslot 更新失效，可能导致虚拟机逃逸或权限提升。这是 v2 回填版本（v1 为 Sasha Levin 的系列），包含 8 个补丁，重构了 TDP MMU 页面错误处理路径，并在 `kvm_tdp_mmu_page_fault()` 中使用 `is_page_fault_stale()` 检查。
+- **修复方案**: 回填 Sean Christopherson 等人的 8 个补丁，包括重命名 `mmu_notifier_*` 为 `mmu_invalidate_*`、拆分 TDP MMU 页面错误处理、检查无效/过期根等。涉及 14 个文件，+223/-128 行。
+- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260823130743.1-k@mgml.me/)
 
 ### 3. CVE-2026-74484: binfmt_misc 沙箱挂载自引用 DoS
-
 - **邮件列表**: linux-mm
-- **发件人**: Ye Weihua (华为)
-- **类型**: 安全漏洞 / 拒绝服务
+- **类型**: 安全漏洞
 - **严重程度**: 🔴 严重
-- **影响子系统**: fs/binfmt_misc
-- **描述**: CVE-2026-74484 的引入提交为 `21ca59b365c0` ("binfmt_misc: enable sandboxed mounts", v6.7)。在沙箱挂载功能引入之前，非特权用户或容器无法在受限命名空间中触发自引用 DoS。此提交标记了 `.vulnerable` 文件以追踪受影响版本。
-- **修复方案**: 通过 CVE 追踪机制标记受影响提交，后续修复补丁待发布。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/linux-mm/20260819030103.123456-1-yeweihua4@huawei.com/)
+- **影响子系统**: binfmt_misc
+- **描述**: CVE-2026-74484 的引入提交被更正为 `21ca59b365c0` ("binfmt_misc: enable sandboxed mounts", v6.7)。在该提交之前，非特权用户或容器无法在受限命名空间中触发自引用 DoS。沙箱挂载功能引入后，攻击面被扩大。
+- **修复方案**: 已由 Greg KH 确认并推送更新记录。`.vulnerable` 文件已创建指向引入提交。
 
 ### 4. USB Gadget f_uvc Extension Unit 描述符堆溢出
-
 - **邮件列表**: linux-kernel
-- **发件人**: Haofeng Li
-- **类型**: 安全漏洞 / 堆溢出
+- **类型**: 安全漏洞
 - **严重程度**: 🔴 严重
-- **影响子系统**: usb/gadget/f_uvc
-- **描述**: USB Video Class gadget 的 Extension Unit 描述符计算 `bLength = 24 + bNrInPins + bControlSize`，当结果超过 255 时在 u8 字段中静默回绕。例如 `p=n=255` 描述 534 字节描述符但 `bLength` 仅为 22。`uvc_copy_descriptors()` 按回绕后的 `bLength` 分配内存，但实际拷贝完整描述符，导致最多 512 字节的堆越界写。攻击者只需 configfs 写权限即可触发，无需 USB 流量。在 7.2.0+ 上已复现，FORTIFY 会触发 panic，KASAN 报告 "slab-out-of-bounds Write"。
-- **修复方案**: 在四个 configfs 入口点（b_nr_in_pins、b_control_size、ba_source_id、bm_controls）拒绝描述符大小超出 bLength 范围的组合；在 `uvc_copy_descriptors()` 中校验 bLength 与实际内容匹配。补丁已发布 v4 版本。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260825010442.1.Ia7e0c4f0c5e3d4a5b6c7d8e9f0a1b2c3d4e5f6a7@google.com/)
+- **影响子系统**: USB gadget / UVC
+- **描述**: f_uvc 的 Extension Unit 描述符长度计算存在整数溢出。`bNrInPins` 和 `bControlSize` 各接受 0..255 范围，描述符实际长度为 24 + p + n 字节，但存储在 `u8 bLength` 字段中，当超过 255 时静默回绕。`uvc_copy_descriptors()` 按回绕后的 `bLength` 分配缓冲区，但 `UVC_COPY_XU_DESCRIPTOR()` 按实际大小拷贝，导致最多 512 字节的堆越界写入。攻击链：对 UVC gadget 的 configfs 属性有写权限即可触发，无需 USB 流量，单次 bind 即可。
+- **修复方案**: 在所有四个 configfs 入口点拒绝描述符不适合 `bLength` 的组合，并使 `uvc_copy_descriptors()` 拒绝 `bLength` 与内容不匹配的 Extension Unit。补丁已到 v4 版本，经 Andy Shevchenko 等审查。
+- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260825010442.1-haofeng.li@buaa.edu.cn/)
 
-### 5. Futex REQUEUE_PI use-after-free (PREEMPT_RT)
+### 5. SMB3 客户端加密写入数据丢失
+- **邮件列表**: regressions
+- **类型**: bug/数据损坏
+- **严重程度**: 🔴 严重
+- **影响子系统**: fs/smb/client, netfs
+- **描述**: 对加密 SMB3 挂载的大缓冲写入可能丢失数据。每个 `write()` 返回成功，但一个或多个 `wsize` 大小的范围永远不到达服务器。根因：每个加密写入需要一个 order-4 的连续分配（4 MiB wsize，1027 个 scatterlist 条目），当 `kzalloc(GFP_NOFS)` 失败返回 `-ENOMEM` 时，该错误不被分类为可重试（仅 `-EAGAIN` 和 `-ECONNABORTED` 重试），子请求被标记为 `NETFS_SREQ_FAILED` 且不重发。从 6.1 升级到 6.12.53 后发现。
+- **修复方案**: 将 `-ENOMEM` 分类为可重试错误，或在 netfs 层增加内存分配重试机制。
 
+### 6. ext4 fast_commit 日志损坏（fsync 未链接文件后崩溃）
 - **邮件列表**: linux-kernel
-- **发件人**: Sebastian Andrzej Siewior / Yao Kai (华为)
-- **类型**: bug / use-after-free
+- **类型**: bug/数据损坏
 - **严重程度**: 🔴 严重
-- **影响子系统**: kernel/locking/futex
-- **描述**: 在 PREEMPT_RT 上，`FUTEX_CMP_REQUEUE_PI` 可触发 KASAN slab-out-of-bounds 报告。futex_q 在等待者栈上分配，早期唤醒（超时/信号）可与 PI requeue 竞争：`futex_requeue_pi_complete()` 发布 `Q_REQUEUE_PI_LOCKED` 后调用 `rcuwait_wake_up()`，但等待者可能已从系统调用返回并释放栈上的 futex_q，导致 rcuwait use-after-free。
-- **修复方案**: 修改 futex requeue PI 完成逻辑，防止在等待者可能已离开后调用 `rcuwait_wake_up()`。注意：该补丁回port到 6.18-stable 和 7.1-stable 时失败，需要适配。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260824145543.1.Ia7e0c4f0c5e3d4a5b6c7d8e9f0a1b2c3d4e5f6a7@kernel.org/)
+- **影响子系统**: ext4, journal
+- **描述**: 在 ext4 启用 fast_commit 时，以下操作序列导致崩溃后无法挂载文件系统（"Structure needs cleaning"）：(1) 创建目录和文件 (2) 同步文件系统 (3) 打开文件 (4) 删除文件 (5) 对文件调用 fsync (6) 系统崩溃。在 Linux 7.2 和 6.17.0-29-generic 上复现。
+- **修复方案**: 需要修复 fast_commit 在处理未链接文件 fsync 时的日志记录逻辑。已提供 C 语言复现程序。
 
-### 6. ARM64 调度器崩溃：rq->curr 悬空指针 (HiSilicon Kunpeng 920)
-
+### 7. sched/fair: enqueue 路径除零错误导致内核 Panic
 - **邮件列表**: linux-kernel
-- **发件人**: Li Wanwu (麒麟软件)
-- **类型**: bug / 内核崩溃
+- **类型**: bug/崩溃
 - **严重程度**: 🔴 严重
-- **影响子系统**: kernel/sched/core
-- **描述**: 自 2025 年起，在十余台 ARM64 生产服务器（HiSilicon Kunpeng 920 / HIP08 / TaiShan v110 核心，96-256 CPU）上观察到偶发性内核 panic 和崩溃。崩溃前运行时间从 23 天到 300 天不等。所有崩溃的 CPU 正在运行 idle 任务，但 `rq->curr` 仍指向之前的任务（`current != rq->curr`），表明 `__schedule()` 中 `rq->curr = next` 的更新未生效或被回退。崩溃表现为 `!se->on_rq` 警告后 hard lockup。受影响系统使用基于 v4.19 的发行版内核。
-- **修复方案**: 问题仍在调查中，发帖者寻求社区帮助定位根因。可能涉及 NO_HZ_FULL + CONTEXT_TRACKING + CPU_ISOLATION 与 CFS 带宽控制的交互。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/all/20260824153308.1.Ia7e0c4f0c5e3d4a5b6c7d8e9f0a1b2c3d4e5f6a7@kernel.org/)
+- **影响子系统**: sched/fair
+- **描述**: `__calc_prop_weight()` 在 enqueue 路径中触发除零错误，导致 kernel panic。在 CachyOS 7.2.0 上复现，idle CPU 接收唤醒 IPI 时在 `enqueue_task_fair` 中崩溃。由于 swapper 无法被杀死，直接 panic 而非 oops。问题与 flat-hierarchy 系列相关，cpuset 的 effective mask 为空导致除零。
+- **修复方案**: 需要在 `__calc_prop_weight()` 中添加除零保护，或修复导致 cpuset effective mask 为空的根因。
 
-### 7. syzbot 集中报告多个 use-after-free 和越界访问
-
-- **邮件列表**: linux-kernel / netdev
-- **发件人**: syzbot
-- **类型**: bug / 内存安全
+### 8. keys: keyctl_chown_key 竞争条件导致 Use-After-Free
+- **邮件列表**: linux-security-module
+- **类型**: 安全漏洞
 - **严重程度**: 🔴 严重
-- **影响子系统**: 多个子系统
-- **描述**: 本周 syzbot 报告了 156 个问题，其中严重的包括：
-  - `KASAN: slab-use-after-free Write in do_bad_area` (fs)
-  - `KASAN: slab-use-after-free Read in irq_migrate_all_off_this_cpu` (kernel)
-  - `KASAN: slab-use-after-free Read in vidtv_bridge_on_new_pkts_avail` (media)
-  - `possible deadlock in xsk_diag_dump` (bpf/net)
-  - `possible deadlock in rawmidi_release_priv` (sound)
-  - `possible deadlock in get_from_partial_node` (acpica)
-  - `WARNING: locking bug in tcp_tsq_handler` (net)
-  - `BUG: stack guard page was hit in inet_stream_connect` (net/nfs)
-  - `INFO: task hung in mmc_stop_host` (kernel)
-  - `divide error in alauda_transport` (usb-storage)
-- **修复方案**: 部分已有对应补丁（如 vidtv frontend 引用泄漏修复、eventfs 初始化修复），其余仍在处理中。
+- **影响子系统**: security/keys
+- **描述**: `keyctl_chown_key()` 在持有 `key->sem` 时替换 `key->user`，释放信号量后丢弃旧的 `key_user` 引用。但 `/proc/keys` 迭代器和 `find_keyring_by_name()` 在持有不相关锁的情况下解引用 `key->user`，导致竞争窗口：CPU 0 读取旧的 `key->user` → CPU 1 替换并释放 → CPU 0 读取已释放内存。影响版本：自 `454804ab0302` 起。
+- **修复方案**: 使用 `key_user_lock` 序列化命名空间映射读取和指针替换。
+
+### 9. Landlock: hook_path_link Use-After-Free
+- **邮件列表**: linux-security-module
+- **类型**: 安全漏洞
+- **严重程度**: 🔴 严重
+- **影响子系统**: security/landlock
+- **描述**: `current_check_refer_path()` 在不持有引用或锁的情况下读取 `old_dentry->d_parent`。`hook_path_link()` 没有保护：`do_linkat()` 持有源 dentry 的引用但不锁定或引用其父目录，因此并发 `rename(2)` 可以在 `security_path_link()` 运行时重新设置源的父目录，原父目录随后被移除并释放。任何能用 `LANDLOCK_ACCESS_FS_REFER` 沙箱化自己的进程都可通过 `linkat(2)` 循环与 `rename(2)` 和 `rmdir(2)` 竞争触发。KASAN 确认 slab-use-after-free。
+- **修复方案**: 使用 `dget_parent()` 获取父目录引用，在层次遍历和审计记录完成后释放。`Cc: stable` 已添加。
+
+### 10. khugepaged Tracepoint Use-After-Free
+- **邮件列表**: linux-mm
+- **类型**: bug/崩溃
+- **严重程度**: 🔴 严重
+- **影响子系统**: mm/khugepaged
+- **描述**: khugepaged 的 tracepoints 接收 folio 指针并调用 `folio_pfn()`，但此时 folio 可能已不再有效：在 `folio_put()`、`folio_unlock()` 或 `pte_unmap_unlock()` 之后被释放，或者根本不是 folio 而是 xarray 编码的 swap 条目。在经典 SPARSEMEM 上，一旦启用 trace event 就会导致 khugepaged oops。
+- **修复方案**: 直接传递 pfn 给 tracepoints，在 folio 仍然被 pin 时捕获。v3 版本关闭了 UAF 窗口。
 
 ---
 
 ## 🟠 高优先级问题
 
-> 本周发现 9 个高优先级问题，涉及严重回归、功能不可用和数据丢失。
+> 本周发现 12 个高优先级问题，涉及功能不可用和严重回归
 
-### 1. USB Hub 回归导致 Threadripper 7970X 硬件复位 (6.12.36+)
-
-- **邮件列表**: linux-kernel / stable / regressions
-- **发件人**: Mathieu Fluhr
+### 1. USB Hub 回归：Threadripper 7970X 上 MCE / 数据架构同步洪泛
+- **邮件列表**: regressions
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
-- **影响子系统**: usb/hub
-- **描述**: 6.12.36+ 版本中，USB hub 挂起恢复后的延迟工作触发 uncorrected MCE（机器检查异常）/ data fabric sync flood，导致 Threadripper 7970X 工作站硬复位。已二分定位到提交 `aec11e5f9c45`。用户报告在使用 Android 模拟器时频繁遭遇硬崩溃，有时冻结（风扇全开或全关），有时自动重启。
-- **修复方案**: 回归正在跟踪中，社区在讨论中。
-- **补丁链接**: [lore.kernel.org](https://lore.kernel.org/regressions/20260823121534.1.Ia7e0c4f0c5e3d4a5b6c7d8e9f0a1b2c3d4e5f6a7@gmail.com/)
+- **影响子系统**: USB, xHCI, CPU idle
+- **描述**: 自 6.12.36+ 起，USB hub 恢复后的延迟工作触发未纠正的 MCE 和数据架构同步洪泛，导致 Threadripper 7970X 硬件重置。已二分定位到 `aec11e5f9c45`。复现条件：CPU 进入 C2 空闲状态时触发（`processor.max_cstate=1` 可规避）。普通用户通过 USB 设备访问即可导致系统完全崩溃。Mario Limonciello 认为这可能是平台固件 bug。
+- **修复方案**: 等待进一步分析，可能需要 OEM 更新 BIOS 或内核中规避特定 xHCI 控制器行为。
 
-### 2. iommu/amd 回归导致早期启动挂起 (6.18.40)
-
-- **邮件列表**: linux-kernel / regressions
-- **发件人**: Andreas Juch
+### 2. iommu/amd: 启动挂起回归
+- **邮件列表**: regressions
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
 - **影响子系统**: iommu/amd
-- **描述**: 6.18.40 版本无法启动（黑屏，SSH 不可达，无持久日志）。git bisect 确认 `dc266f6c4e26` ("iommu/amd: Fix premature break in init_iommu_one()") 为首个坏提交。回退该提交后正常启动。受影响硬件：ASRockRack B550D4-4L (BIOS P1.10)。
-- **修复方案**: 需要修正 `init_iommu_one()` 中的过早 break 逻辑。
+- **描述**: 提交 `dc266f6c4e26` ("iommu/amd: Fix premature break in init_iommu_one()") 导致 NixOS 系统 6.18.40 无法启动。根因：IVRS 广告的 EFR 与 IOMMU MMIO 寄存器读取的实际 EFR 不同，该补丁暴露了已有的 bug。
+- **修复方案**: Vasant Hegde 提供了初步修复补丁，正确修复 `late_iommu_features_init()` 使用实际 EFR。
 
-### 3. bnxt_en 网卡初始化失败回归 (6.18.45)
-
-- **邮件列表**: linux-kernel / netdev
-- **发件人**: Max Kellermann (IONOS)
+### 3. bnxt_en: page_pool_create_percpu() 失败导致网卡无法启动
+- **邮件列表**: netdev
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
-- **影响子系统**: net/ethernet/bnxt
-- **描述**: 更新到 6.18.45 后 bnxt_en 网卡初始化失败：`page_pool_create_percpu()` 返回 -EINVAL。回归由 `ad9ffc61fafeb` ("eth: bnxt: support qcfg provided rx page size") 回port引入。部分 NIC 上 `ndo_default_qcfg` 从未被调用，`rxq->qcfg.rx_page_size` 保持为 0，导致 `bnxt_alloc_rx_page_pool()` 失败。
-- **修复方案**: 回port master 中的两个修复：`1410c7416dc3` ("eth: bnxt: always set the queue mgmt ops") 和 `3cf48c04966e` ("eth: bnxt: make sure we populate the qcfg defaults on old FW/HW")。已在 6.18.45 上验证。
+- **影响子系统**: net/bnxt_en, page_pool
+- **描述**: 6.18.45 上 bnxt_en 网卡无法启动，日志显示 `page_pool_create_percpu() gave up with errno -22`。
+- **修复方案**: 修复已在本周排队的 page_pool 补丁中。
 
-### 4. blk-mq 回归：hctx 丢失 BLK_MQ_F_TAG_QUEUE_SHARED
-
-- **邮件列表**: linux-kernel / linux-block
-- **发件人**: lev
+### 4. blk-mq: hctx 在 nr_hw_queues 更新时丢失 TAG_QUEUE_SHARED 标志
+- **邮件列表**: linux-block
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
-- **影响子系统**: block/blk-mq
-- **描述**: 在 `blk_mq_update_nr_hw_queues()` 调用过程中，hctx 丢失 `BLK_MQ_F_TAG_QUEUE_SHARED` 标志，可能导致共享标签队列行为异常。
-- **修复方案**: 待修复。
+- **影响子系统**: block/blk-mq, NVMe
+- **描述**: `blk_mq_update_nr_hw_queues()` 后，tag set 上的每个 hctx 可能丢失 `BLK_MQ_F_TAG_QUEUE_SHARED` 标志。`blk_mq_alloc_hctx()` 刻意屏蔽该位，但 `__blk_mq_realloc_hw_ctxs()` 在队列数不变时也会重新初始化每个 hctx，且不重新应用该标志。导致 NVMe-TCP/RDMA 每次重连或控制器重置都触发此问题。标志丢失交替出现，可能是未被注意到的原因。
+- **修复方案**: 在 `__blk_mq_update_nr_hw_queues()` 的重新分配路径中重新应用 `BLK_MQ_F_TAG_QUEUE_SHARED` 标志。
 
-### 5. ext4 fast_commit 数据损坏：unlink 后 fsync 导致日志错误
-
-- **邮件列表**: linux-kernel
-- **发件人**: Slava0135
-- **类型**: bug / 数据损坏
-- **严重程度**: 🟠 高
-- **影响子系统**: fs/ext4
-- **描述**: ext4 启用 fast_commit 时，在目录中创建文件→同步→打开文件→unlink→fsync 文件，系统崩溃后挂载文件系统报错 "Structure needs cleaning" / "error loading journal"。复现于 7.2 和 6.17.0-29-generic (Ubuntu 25.10)。
-- **修复方案**: 需要修复 fast_commit 在 unlink+fsync 场景下的日志记录逻辑。
-
-### 6. hp_bioscfg 导致启动挂起
-
-- **邮件列表**: linux-kernel / regressions
-- **发件人**: VOLKAN SALİH
-- **类型**: 回归问题
-- **严重程度**: 🟠 高
-- **影响子系统**: platform/x86/hp_bioscfg
-- **描述**: hp_bioscfg 驱动导致 HP Laptop 15-bs1xx 启动挂起，blacklist 后可正常启动。
-- **修复方案**: 需要修复驱动初始化逻辑。
-
-### 7. PCI Dynamic OF 节点创建在无效桥配置时挂起
-
-- **邮件列表**: linux-kernel / stable / regressions
-- **发件人**: Angel J
+### 5. PCI: Dynamic OF Node 创建在无效桥配置上挂起
+- **邮件列表**: regressions
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
 - **影响子系统**: PCI
-- **描述**: PCI 动态 OF 节点创建在遇到无效桥配置时导致系统挂起。
-- **修复方案**: 需要在节点创建时校验桥配置有效性。
+- **描述**: v6.17-rc1 引入的动态 PCI OF 节点代码在 Dell XPS 8940 (Intel i7-11700, Rocket Lake) 上导致启动极早失败。`CONFIG_PCI_DYNAMIC_OF_NODES=y` 时显示黑屏，机器挂起。v6.19-rc5 因 RP1 驱动不再选择该选项而正常启动。
+- **修复方案**: 在创建动态 OF 节点时跳过无效的桥配置。
 
-### 8. mt7925 MLO 连接在 6GHz 链路活跃时静默停滞
-
+### 6. hp_bioscfg: 模块初始化导致启动挂起
 - **邮件列表**: regressions
-- **发件人**: Jonas Hort
 - **类型**: 回归问题
 - **严重程度**: 🟠 高
-- **影响子系统**: net/wireless/mt7925
-- **描述**: mt7925 WiFi 驱动在 MLO (Multi-Link Operation) 模式下，6GHz 链路活跃时连接静默停滞。
+- **影响子系统**: platform/x86, hp_bioscfg
+- **描述**: HP Laptop 15-bs1xx 上 hp_bioscfg 模块初始化时导致启动挂起。7.0.0-30-generic 受影响，6.17.0-40-generic 正常。黑名单 `hp_bioscfg` 或 `acpi=off` 可规避。
 
-### 9. x86 seccomp 性能回归 95.7%
-
-- **邮件列表**: linux-kernel
-- **发件人**: kernel test robot
-- **类型**: 回归问题 / 性能
+### 7. Bluetooth: btrtl RTL8761B 扫描修复导致其他设备不可用
+- **邮件列表**: regressions
+- **类型**: 回归问题
 - **严重程度**: 🟠 高
-- **影响子系统**: x86/bugs, seccomp
-- **描述**: 内核测试机器人报告提交 `a3af84b0fa` (x86/bugs) 导致 `stress-ng.seccomp.ops_per_sec` 性能下降 95.7%。这是一个严重的性能回归。
-- **修复方案**: 需要重新评估该提交对 seccomp 路径的影响。
+- **影响子系统**: Bluetooth/btrtl
+- **描述**: 提交 `5ead2063611a` 为所有 CHIP_ID_8761B 设置 `HCI_QUIRK_BROKEN_EXT_SCAN`，在 USB 0bda:a728 上验证有效，但破坏了 0bda:8771：扩展扫描正常工作，但固件停止响应传统扫描禁用命令，导致控制器重置，所有已连接 BLE 设备断开。已到达 7.1.9 和 6.18.45。
+- **修复方案**: 回退该提交，恢复 v7.2 前的行为。基于检测的修复正在讨论中。
+
+### 8. futex: 私有哈希增长在高负载下可能无法完成
+- **邮件列表**: regressions
+- **类型**: 性能问题/回归
+- **严重程度**: 🟠 高
+- **影响子系统**: futex
+- **描述**: futex 私有哈希增长需要所有线程暂时不使用 futex，以便引用计数器降至 0 完成转换。但在高负载下（如 96 线程持续执行 `FUTEX_WAKE_PRIVATE`），引用计数器永远不降至 0，转换可能数十秒无法完成。
+- **修复方案**: Thomas Gleixner 正在参与讨论，可能需要改进转换机制或允许强制转换。
+
+### 9. powercap: intel_rapl PMU 解绑时内核 Panic
+- **邮件列表**: linux-pm
+- **类型**: bug/崩溃
+- **严重程度**: 🟠 高
+- **影响子系统**: powercap/intel_rapl
+- **描述**: `rapl_package_add_pmu()` 失败时将全局 `rapl_pmu.pmu` 结构清零并返回错误，但先前已探测的包保留 `has_pmu = true`。驱动解绑时对清零的结构调用 `perf_pmu_unregister()`，导致 NULL list head 上的 `list_del_rcu()` 引发内核 panic。
+- **修复方案**: 在尝试注销前检查 PMU 是否实际已注册。已由 Rafael Wysocki 作为 7.3-rc 材料应用。
+
+### 10. AppArmor: Unix Socket ctx->peer NULL 指针解引用
+- **邮件列表**: linux-security-module
+- **类型**: bug/崩溃
+- **严重程度**: 🟠 高
+- **影响子系统**: security/apparmor
+- **描述**: `aa_unix_file_perm` 的辅助函数假设 `ctx->peer` 已设置，但 `ctx->peer` 仅对流连接和 socket pair 记录。`unix_dgram_connect` 设置 `unix_peer(sk)` 但不经过该路径，因此已连接的 AF_UNIX 数据报 socket 有 `unix_peer(sk)` 但 `ctx->peer` 仍为 NULL，首次需要重新验证的写入触发 NULL 指针解引用。
+- **修复方案**: 在辅助函数中检查 `ctx->peer` 是否为 NULL，或在 `unix_dgram_connect` 路径中设置 `ctx->peer`。
+
+### 11. loop: lo_rw_aio() NULL 指针解引用
+- **邮件列表**: linux-block
+- **类型**: bug/崩溃
+- **严重程度**: 🟠 高
+- **影响子系统**: block/loop
+- **描述**: syzbot 报告 `lo_rw_aio()` 中的 NULL 指针解引用。分析认为由提交 `65565ca5f99b` 引入的时序变化暴露。Tetsuo Handa 和 Bart Van Assche 正在讨论修复方案，分歧在于是否需要显式 `synchronize_rcu()` 和 `drain_workqueue()`。Handa 指出 `__loop_clr_fd()` 中无法安全调用这些函数（锁反转风险）。
+- **修复方案**: v6 补丁引入待处理 I/O 请求的宽限期刷新。讨论仍在进行中。
+
+### 12. MPTCP: 14 补丁修复系列（v7.3-rc1）
+- **邮件列表**: netdev
+- **类型**: 修复补丁
+- **严重程度**: 🟠 高
+- **影响子系统**: net/mptcp
+- **描述**: Matthieu Baerts 提交了 14 个 MPTCP 修复，覆盖 v5.7 到 v7.3-rc0 的多个问题，包括：fallback socket 的 RTX 定时器错误调度、SYN cookies 中 backup 标志丢失、ADD_ADDR ID 溢出、uninit-value in `mptcp_write_data_fin`、selftests 中的 UAF 等。
 
 ---
 
 ## 🟡 中等问题
 
-> 本周发现大量中等优先级修复，以下列出重点关注项。
+> 本周发现 8 个中等问题
 
-### 安全修复
+### 1. thermal: gov_power_allocator NULL 指针解引用
+- **类型**: bug/崩溃 | 🟡 中 | **子系统**: thermal
+- **描述**: `power_allocator_update_tz()` 无条件从 `params->trip_max` 派生 trip 描述符，但 `params->trip_max` 允许为 NULL（当区域既无被动也无主动 trip 点时），导致解引用虚假指针。
+- **修复方案**: 在 `params->trip_max` 为 NULL 时提前返回。
 
-1. **Bluetooth RFCOMM 安全确认处理序列化** — Chengfeng Ye — 修复 RFCOMM 安全确认处理的竞态条件，序列化处理以防止并发问题。
+### 2. mm/hugetlb: memfd 错误路径 resv_huge_pages 双重递减
+- **类型**: bug | 🟡 中 | **子系统**: mm/hugetlb
+- **描述**: `alloc_hugetlb_folio_reserve()` 不设置 `HPageRestoreReserve`，当 `hugetlb_add_to_page_cache()` 失败时，`folio_put()` 不恢复预留，随后的 `hugetlb_unreserve_pages()` 再次递减，导致每次失败分配 `resv_huge_pages` 偏差 1。
+- **修复方案**: 在 `alloc_hugetlb_folio_reserve()` 中消费预留时设置 `HPageRestoreReserve`。
 
-2. **squashfs 片段索引表溢出** — Karl Mehltretter — 32 位系统上片段索引表大小溢出，两个补丁修复 sizing overflow 和 bounds check overflow。
+### 3. mm/vmalloc: vmap_purge_lock 内存压力下活锁
+- **类型**: bug | 🟡 中 | **子系统**: mm/vmalloc
 
-3. **kernfs 安全 xattr 保留** — hengyul — 保留安全 xattr 而无需分配 iattrs，减少内存开销。
+### 4. amd-pstate: Cezanne (Ryzen 7 5800U) 数据架构同步洪泛
+- **类型**: bug | 🟡 中 | **子系统**: cpufreq/amd-pstate
+- **描述**: Bugzilla #221909 报告 amd-pstate 在 Cezanne 平台上 CPPC max_perf 控制的数据架构同步洪泛问题。
 
-4. **sh: ptrace 防止修改特权 SR 位** — Jérémy Jean — 防止 ptrace 修改 SuperH 架构的特权 Status Register 位。
+### 5. ASoC: amd: acp6x PDM DMA 内存泄漏
+- **类型**: bug | 🟡 中 | **子系统**: ASoC/amd
 
-5. **SE 固件加载中的字节序/溢出/写保护 bug** — Viken Dadhaniya — 修复 SE 固件加载中的多个 bug（4 个补丁系列）。
+### 6. can: usb: f81604: struct 大小不匹配
+- **类型**: bug | 🟡 中 | **子系统**: can/usb
 
-6. **bpf_memcontrol 有符号枚举边界检查绕过** — chenyuan_fl — 负值可绕过枚举边界检查。
+### 7. mm/mglru: 潜在 generation folio 数量泄漏
+- **类型**: bug | 🟡 中 | **子系统**: mm/mglru
 
-7. **slip: use-after-free in sl_sync()** — Aleksandr Khromov — SLIP 驱动中 sl_sync() 的 UAF 修复。
-
-8. **netfilter cttimeout UAF** — Chengfeng Ye — 模块卸载期间 cttimeout 的 UAF 修复。
-
-9. **tracing: 动态探测事件字段名/类型 UAF** — Henry Martin — 修复动态探测事件字段释放后使用问题。
-
-10. **bpf: 程序 BTF 在 mem-alloc 析构函数中的 UAF** — chenyuan_fl — 修复 BPF 程序 BTF 在内存分配器析构函数中的 UAF。
-
-### 性能优化
-
-1. **bonding: TLB 负载追踪溢出修复** — Hangbin Liu — 高速网卡上 TLB 负载追踪 u32 溢出修复，将 unbalanced_load 转为 per-cpu 状态（5 版迭代）。
-
-2. **NVMe APST 默认最大延迟降至 25ms** — Ferran Duarri — 降低 NVMe Autonomous Power State Transition 默认最大延迟以改善延迟。
-
-3. **BPF 加载性能优化** — Fuyu Zhao — libbpf 选择性加载 kmod BTF 以提升 BPF 加载性能。
-
-4. **maple_tree 微优化** — Liam R. Howlett — mas_wr_store_type() 和 mas_wr_node_store() 的微优化。
-
-5. **mm/vmstat: 添加每阶分配慢路径统计** — Daniil Tatianin — 添加按阶统计分配慢路径信息。
-
-### 内存管理
-
-1. **mm/fbatch: LRU drain 优化系列 (25 补丁)** — Hugh Dickins — 大规模重构 LRU add/drain 机制，移除大量冗余的 `lru_add_drain()` 和 `lru_add_drain_all()` 调用，引入 `LRU_NEXT_ACTIVATE` 位优化 `folio_activate()`。
-
-2. **mm/khugepaged: tracepoint UAF 修复** — Vernon Yang — 3 个补丁修复 khugepaged tracepoint 的 UAF。
-
-3. **mm/hugetlb: 优化 vmemmap** — Kaitao Cheng — 在布尔上下文中使用 `hugetlb_vmemmap_optimizable()`。
-
-### 文件系统
-
-1. **netfs: 分段 bio_vec 链跟踪 folios (v10, 35 补丁)** — David Howells — 第 10 版的重大系列，用分段 bio_vec 链跟踪 netfs 中的 folios，简化读取放弃逻辑。
-
-2. **f2fs: 缓存故障注入支持** — Chao Yu — 为 f2fs 缓存添加故障注入支持（12 补丁系列）。
-
-3. **fs/ceph: 结构布局优化 (11 补丁)** — Max Kellermann — 优化 ceph 文件系统结构布局。
+### 8. acp6x: PDM 中断禁用函数清除 mask 位错误
+- **类型**: bug | 🟡 中 | **子系统**: ASoC/amd/renoir
 
 ---
 
 ## 🟢 低优先级
 
-> 代码清理、文档更新、测试用例等。
+> 本周发现多个低优先级问题（简要列出）
 
-- **clk: clk_init_data 完全初始化 (45 补丁)** — 大规模 clk 子系统清理，确保 clk_init_data 完全初始化
-- **staging: rtl8723bs 格式化修复** — Kaden Vaughn — rtw_security.c 格式化问题
-- **ALSA: cs4265/cs35l45 寄存器默认表排序** — 稳定版回port中的代码整理
-- **thermal: 回退两个与 driver core 变更冲突的装饰性更新** — Rafael J. Wysocki
-- **m68k: 定义 NR_CPUS 为 1** — 稳定版中的小型配置修复
-- 大量设备树绑定文档更新（SM7250、i.MX9、STM32MP25 等）
-
----
-
-## 📋 本周重大补丁系列
-
-| 系列 | 补丁数 | 作者 | 说明 |
-|------|--------|------|------|
-| pkeys-based page table hardening (RFC v9) | 25 | 多人 | 基于 pkeys 的页表加固，RFC 第 9 版 |
-| DEPT (DEPendency Tracker) v19 | 40 | 多人 | 依赖跟踪器，第 19 版迭代 |
-| netfs: 分段 bio_vec 链 (v10) | 35 | David Howells | netfs folio 跟踪重构 |
-| clk: clk_init_data 初始化 | 45 | 多人 | clk 子系统大规模清理 |
-| gpu: nova-core r000 GSP 固件启动 (v2) | 27-31 | Alexandre Courbot | NVIDIA nova-core 驱动 GSP 固件引导 |
-| cgroup/cpuset: 分区 CPU 所有权 | 17 | 多人 | cpuset 分区 CPU 所有权和隔离计费修复 |
-| PCI/CXL: SBR 支持 (v2) | 13 | Fabio M. De Francesco | CXL 下游端口 Secondary Bus Reset 支持 |
-| perf/KVM: PMU 分区 | 23 | 多人 | x86 平台 PMU 分区支持 |
-| mm/fbatch: LRU drain 优化 | 25 | Hugh Dickins | LRU drain 机制大规模重构 |
-| coredump: 稀疏 coredump (v2) | 22 | 多人 | 允许在 coredump socket 上创建稀疏 coredump |
+- **IMA**: 允许用户通过 `IMA_MEASURE_PCR_IDX` 指定 PCR 索引
+- **keys**: 拒绝超过索引长度的描述
+- **loop**: 分拆 `loop_change_fd()`、修复递归检测和竞争条件（Bart Van Assche 13 补丁系列）
+- **blk-wbt**: 设置延迟时始终将 `enable_state` 改为 `MANUAL`
+- **NVMe multipath**: 修复分区的 diskstats
+- **mempolicy**: 修复 `alloc_pages_bulk_weighted_interleave()` 中的睡眠分配
+- **maple_tree**: 文档修复、死代码清理（Liam Howlett v3 19 补丁系列）
+- **selftests**: cgroup zswap 修复、mm 修复
+- **cpufreq**: acpi-cpufreq P-state 索引不匹配修复
 
 ---
 
-## 📋 本周 GIT PULL 请求（v7.3 合并窗口）
+## 📋 v7.3 合并窗口进展
 
-本周开发者提交了多个子系统 GIT PULL 请求，面向 v7.3 开发周期：
+本周是 v7.3-rc1 合并窗口周，Linus Torvalds 合并了大量子系统 GIT PULL 请求（共 290 个），涵盖：
 
-- Block updates for 7.3
-- Btrfs updates for 7.3
-- Crypto Update for 7.3
-- Bluetooth (2026-08-24)
-- soc / Arm platform updates for 7.3
-- alpha updates for v7.3
-- auxdisplay for 7.3
-- capabilities update for v7.3
-- configfs for v7.3-rc1
+| 子系统 | 维护者 |
+|--------|--------|
+| MM | Andrew Morton |
+| 网络 | Jakub Kicinski |
+| 块设备 | Jens Axboe |
+| x86 (entry/mm/tdx/cache/cpu/alternatives) | Dave Hansen / Borislav Petkov |
+| KVM | Paolo Bonzini |
+| PCI | Bjorn Helgaas |
+| RISC-V | Paul Walmsley |
+| Btrfs | David Sterba |
+| RCU | Paul E. McKenney |
+| Rust | Miguel Ojeda |
+| 安全 (capabilities/landlock/integrity) | Serge Hallyn / Mickaël Salaün / Mimi Zohar |
+| 热管理 | Rafael J. Wysocki |
+| 文件系统 (ext4/exfat/ksmbd/smb/ntfs3) | Ted Ts'o / Namjae Jeon / Paulo Alcantara |
+| 声卡 | Takashi Iwai |
+| 加密 | Herbert Xu |
 
----
-
-## 🔗 关键链接
-
-- **lore.kernel.org 主站**: [https://lore.kernel.org](https://lore.kernel.org)
-- **linux-kernel 列表**: [https://lore.kernel.org/lkml/](https://lore.kernel.org/lkml/)
-- **netdev 列表**: [https://lore.kernel.org/netdev/](https://lore.kernel.org/netdev/)
-- **regressions 列表**: [https://lore.kernel.org/regressions/](https://lore.kernel.org/regressions/)
-- **CVE-2025-38616 TLS 修复线程**: [lore.kernel.org](https://lore.kernel.org/all/20260822000018.48130-1-artem@trailofbits.com/)
-- **ARM64 调度器崩溃讨论**: [lore.kernel.org](https://lore.kernel.org/lkml/)
-- **USB Hub Threadripper 回归**: [lore.kernel.org/regressions](https://lore.kernel.org/regressions/)
-- **USB Gadget f_uvc 堆溢出修复**: [lore.kernel.org](https://lore.kernel.org/all/)
+Linus 对 x86/alternatives 的评论：移除 smp_locks alternatives 机制（用于在 UP 机器上运行 SMP 内核时 patch out lock 前缀），表示"早该做了"。
 
 ---
 
 ## 📝 本周技术趋势分析
 
-1. **安全加固持续深入**: 本周出现 3 个 CVE 和多个堆溢出/UAF 修复，表明内核安全审计持续活跃。特别是 USB gadget 子系统的 f_uvc 堆溢出展示了 configfs 接口的整数溢出攻击面。
+1. **安全审计持续深入**：本周出现 3 个 CVE 和多个堆溢出/UAF 修复。USB gadget f_uvc 的 Extension Unit 描述符整数溢出特别值得关注——configfs 接口的整数溢出攻击面此前未被充分重视。keys 和 landlock 的 UAF 都需要特定竞争条件触发，但均可被非特权用户利用。
 
-2. **稳定版维护工作量巨大**: 7 个稳定分支同时发布 RC，合计超过 1,600 个补丁，显示长期支持内核的维护负担。5.10 和 6.1 作为最老的支持分支，仍然接收大量修复。
+2. **v7.3 合并窗口活跃**：本周有 290 个 GIT PULL 请求被处理，涵盖几乎所有主要子系统。Rust 子系统继续推进，i2c Rust 驱动首次通过 GIT PULL 合入。
 
-3. **ARM64 服务器稳定性问题**: HiSilicon Kunpeng 920 上的调度器崩溃报告值得关注，`rq->curr` 悬空指针问题可能影响大规模 ARM64 部署。NO_HZ_FULL + CPU 隔离配置下的调度器竞态需要更多关注。
+3. **稳定版维护负担沉重**：7 个稳定分支同时发布 RC，合计超过 1,635 个补丁。5.10（235 补丁）和 6.1（303 补丁）作为最老的支持分支仍然接收大量修复。
 
-4. **回归跟踪机制有效运作**: regressions 邮件列表本周活跃，多个严重回归（USB hub MCE、iommu 启动挂起、bnxt_en 初始化失败）被及时报告和二分定位。
+4. **AMD 平台稳定性问题集中爆发**：Threadripper 7970X 的 USB hub MCE 回归和 Cezanne (Ryzen 7 5800U) 的 amd-pstate 数据架构同步洪泛，加上 iommu/amd 的启动挂起回归，显示 AMD 平台在 C-state 和 IOMMU 交互方面存在深层次固件/驱动协调问题。
 
-5. **大系列补丁持续迭代**: DEPT (v19)、netfs bio_vec (v10)、pkeys page table hardening (RFC v9) 等长期系列继续迭代，显示内核社区对复杂功能的谨慎评审态度。
+5. **回归跟踪机制有效运作**：regressions 邮件列表本周活跃，多个严重回归被及时报告和二分定位。USB hub MCE、iommu/amd 启动挂起、PCI Dynamic OF 节点挂起等都得到了开发者快速响应。
 
-6. **内存管理重构**: Hugh Dickins 的 mm/fbatch LRU drain 优化系列（25 补丁）是本周最重要的 mm 重构，系统性移除冗余 LRU drain 调用，有望改善大规模系统的性能。
+6. **内存管理修复持续**：khugepaged tracepoint UAF、hugetlb 双重递减、mglru folio 泄漏、vmalloc 活锁等多个 mm 修复显示内存管理子系统的复杂性和持续维护需求。
+
+7. **蓝牙子系统兼容性问题**：RTL8761B 的 LE 扫描修复"一人之药他人之毒"——修复一个设备的同时破坏了另一个设备，凸显 USB 蓝牙控制器固件差异性问题。回退是本周的正确决策。
+
+8. **调度器 flat-hierarchy 系列引入新问题**：sched/fair 的除零 panic 表明 flat-hierarchy 重构系列引入了未预见的边界条件（空 cpuset effective mask），需要更多测试和除零保护。
 
 ---
 
-*由 Multica autopilot 自动生成于 2026-08-25T10:50:00Z*
+*由 Multica autopilot 自动生成于 2026-08-25*
 *数据采集方式: git clone lore.kernel.org public-inbox 仓库 (HTTP API 受 Anubis 机器人保护)*
