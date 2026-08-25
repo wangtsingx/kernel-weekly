@@ -1,0 +1,103 @@
+linux-block	ad44b1e068951dc99229c42ec283a7aa35d76508	2026-08-25T13:41:35+10:00	NeilBrown	Re: [PATCH v19 00/40] DEPT(DEPendency Tracker)
+linux-block	b0f21bf109fbcb4dabc1cb011368699f5d392f4f	2026-08-25T03:40:09+01:00	Matthew Wilcox	Re: [PATCH v19 00/40] DEPT(DEPendency Tracker)
+linux-block	c42e194421dcfbbe42a50c58ea3dd6ca81af611a	2026-08-25T10:33:45+08:00	yu kuai	Re: [RFC PATCH v3 4/6] blk-cgroup: allocate blkgs in blkg_create
+linux-block	9358884ca6754c4e895d3c9d70f82a6b085538fe	2026-08-25T09:35:00+08:00	Tao Cui	Re: [RFC PATCH v3 4/6] blk-cgroup: allocate blkgs in blkg_create
+linux-block	2d241e79e0a61b3866e8b87208a78955d8c3118e	2026-08-25T09:37:34+10:00	NeilBrown	Re: [PATCH v19 00/40] DEPT(DEPendency Tracker)
+linux-block	ab0d60ba68cdcfdb6edf5e31747280de6216321e	2026-08-24T16:24:00-07:00	Bart Van Assche	Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+linux-block	88f84d9c0350e1935c89c02b72eb96b75323a1d4	2026-08-24T15:53:49-07:00	Bart Van Assche	Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+linux-block	f1f03ea6eaed24621ba9abf8b1735aa7b443ec9a	2026-08-25T07:06:53+09:00	Tetsuo Handa	Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+linux-block	b8af2b2de418fb487fd51dbde40ad32bc1b00392	2026-08-24T14:57:13-07:00	Boris Burkov	Re: [PATCH 3/7] btrfs: Use filemap_invalidate_pages()
+linux-block	3c5dfe901f50c0200e3c6357d64f234d996b2544	2026-08-24T21:47:34+01:00	Matthew Wilcox	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	8a5c0eed1bd980a1d1d841fe1b44d6974eb40d25	2026-08-24T13:23:14-07:00	Bart Van Assche	Re: [PATCH 07/13] loop: Fix race conditions in loop_validate_file()
+linux-block	b17f4ba894e7fa7d91ca19897fac691afa546475	2026-08-24T21:33:03+02:00	Miklos Szeredi	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	7e81818af55037d0d7794083e90a42d2095fc14e	2026-08-24T20:42:41+02:00	David Hildenbrand (Arm)	Re: [PATCH alt 13/25] mm/fbatch: no lru_add_drain() to collect_longterm_unpinnable_folios()
+linux-block	66f3491ae6ea530131b1c262551f697f75f60fd1	2026-08-24T19:17:42+01:00	Matthew Wilcox	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	8a6396f874756cec106109aa5f068fb7761f1493	2026-08-24T23:36:21+05:30	Nilay Shroff	Re: [PATCH 07/13] loop: Fix race conditions in loop_validate_file()
+linux-block	17969d697239550a92f4fb4e2024ba32353ac28e	2026-08-24T11:01:34-06:00	Jonathan Corbet	Re: [PATCH v2] docs: block: fix dead http link in blk-mq.rst
+linux-block	3470b01ec72466b7181154a307def29abffbe8fc	2026-08-24T09:15:32-07:00	Bart Van Assche	Re: [PATCH 07/13] loop: Fix race conditions in loop_validate_file()
+linux-block	4d75fc8e5b41685e2d68381f68f36809ebf28106	2026-08-24T07:55:39-07:00	Hugh Dickins	[PATCH alt 13/25] mm/fbatch: no lru_add_drain() to collect_longterm_unpinnable_folios()
+linux-block	351273bb6843a53c927b0713abf3058128839854	2026-08-24T07:51:12-07:00	Hugh Dickins	[PATCH 25/25] mm/fbatch: move lru_add_drain_all() declaration to mm/internal.h
+linux-block	0cbd0c449fd046ba3c42e1cec96e91a132617ce0	2026-08-24T07:49:14-07:00	Hugh Dickins	[PATCH 24/25] fs,mm/fbatch: lru_cache_disable() keep off buffer_head lrus only
+linux-block	a4ff2bf575c702716dfceef9f7d791d4b23ed539	2026-08-24T07:47:20-07:00	Hugh Dickins	[PATCH 23/25] fs,mm/fbatch: use invalidate_bh_lrus() not invalidate_bh_lrus_cpu()
+linux-block	7c7efb69d7f09846df2b314eee8a076f60c7fef0	2026-08-24T07:44:46-07:00	Hugh Dickins	[PATCH 22/25] fs/fbatch: drop_caches invalidate_bh_lrus() not lru_add_drain_all()
+linux-block	69ae6f8e7a729f1370aadbf5026a052c9b98ec25	2026-08-24T15:41:03+01:00	David Howells	[PATCH v10 10/35] iov_iter: Add a segmented queue of bio_vec[]
+linux-block	9abe5fd594c73d690aa57efda225ce530e593989	2026-08-24T15:41:02+01:00	David Howells	[PATCH v10 09/35] iov_iter: Make iov_iter_get_pages*() wrap iov_iter_extract_pages()
+linux-block	cfa162c9fc032e41e8736945786bbda390834866	2026-08-24T15:41:01+01:00	David Howells	[PATCH v10 08/35] Add a function to kmap one page of a multipage bio_vec
+linux-block	e7e881b5ab94b720fd50337ff8fefe844ddbe416	2026-08-24T07:41:46-07:00	Hugh Dickins	[PATCH 21/25] block/fbatch: no lru_add_drain_all() in invalidate_bdev()
+linux-block	d17597d7daf6cb5f7b5756d2b74cc026339cc435	2026-08-24T07:39:12-07:00	Hugh Dickins	[PATCH 20/25] s390/fbatch: no lru_add_drain_all() in s390_wiggle_split_folio()
+linux-block	0c4ae54c8169151f4039c6c7501bc6ae2e2427b8	2026-08-24T07:36:57-07:00	Hugh Dickins	[PATCH 19/25] mm/fbatch: vm/stat_refresh include lru_add_drain() on each cpu
+linux-block	ceb3f212dcc90b0128a50b3bb0aeebd836ff1187	2026-08-24T07:34:38-07:00	Hugh Dickins	[PATCH 18/25] mm/fbatch: remove lru_add_drain() and _all() calls from various
+linux-block	a0587bf6787b3d7702230d986227fe1cf035df28	2026-08-24T07:32:38-07:00	Hugh Dickins	[PATCH 17/25] mm/fbatch: no lru_cache_disable() in __alloc_contig_migrate_range()
+linux-block	01a40eef4c73b107ef16add8b311bf5507a01efb	2026-08-24T07:30:04-07:00	Hugh Dickins	[PATCH 16/25] mm/fbatch: remove lru_cache_disable(() from NUMA folio migration
+linux-block	ca27a89c821ba5e776da0ba136742e05b3578657	2026-08-24T07:27:44-07:00	Hugh Dickins	[PATCH 15/25] mm/fbatch: remove shake_folio() shake_page() from memory-failure
+linux-block	a7438b1966a39bbcb368106f70eabeb9c3bc78af	2026-08-24T07:25:56-07:00	Hugh Dickins	[PATCH 14/25] mm/fbatch: no lru_add_drain() nor _all() for memfd_wait_for_pins()
+linux-block	7dfd607ff9919c5f613150641172f70b8c96f1e7	2026-08-24T07:23:23-07:00	Hugh Dickins	[PATCH 13/25] mm/fbatch: no lru_add_drain() to collect_longterm_unpinnable_folios()
+linux-block	93f766d75ced94029a8ddb4102d132cf42d063c5	2026-08-24T07:20:44-07:00	Hugh Dickins	[PATCH 12/25] mm/fbatch: remove percpu_pvec_drained and folios_put()
+linux-block	d528b03f095fab53e61be99d2b3926d409072fa9	2026-08-24T07:18:24-07:00	Hugh Dickins	[PATCH 11/25] mm/fbatch: remove migration's PAGE_WAS_MLOCKED lru_add_drain()
+linux-block	b38d3e0407dec607b9cbd035ac964d1d5f0201d9	2026-08-24T07:16:30-07:00	Hugh Dickins	[PATCH 10/25] mm/fbatch: remove several uses of mlock_drain_local()
+linux-block	b5cee13c10cf581d862257babbaceb4eb1cceb5b	2026-08-24T07:14:06-07:00	Hugh Dickins	[PATCH 09/25] mm/fbatch: restore mlock+munlock batching, without extra ref
+linux-block	20ec3945070560b059c436230e5db7d1773de468	2026-08-24T16:12:29+02:00	David Hildenbrand (Arm)	Re: [PATCH v19 00/40] DEPT(DEPendency Tracker)
+linux-block	3f753d367e0c2771ad4f7fef92c9b5cb48eec3fa	2026-08-24T07:11:52-07:00	Hugh Dickins	[PATCH 08/25] mm/fbatch: replace mlock_new_folio() by __folio_add_lru(,mlockit)
+linux-block	b6bbcb3effa6e714522e478071147f6c7280364c	2026-08-24T07:09:34-07:00	Hugh Dickins	[PATCH 07/25] mm/fbatch: LRU_NEXT_ACTIVATE bit to optimize folio_activate()
+linux-block	8a0e924ce89d84237dc5acf1778542ac1a0ac4d1	2026-08-24T07:06:26-07:00	Hugh Dickins	[PATCH 06/25] mm/fbatch: fbatch_drain_lazyfree(onstack fbatch) before ptl unlock
+linux-block	ace535d8c0eb6f1453eb1790b42ca7f5fc1c2282	2026-08-24T07:03:52-07:00	Hugh Dickins	[PATCH 05/25] mm/fbatch: lru_add_del_folio()+folio_add_lru() after clear_lru()
+linux-block	4725da26fd730f7987ddbf7dfbcb031139f59d04	2026-08-24T07:01:20-07:00	Hugh Dickins	[PATCH 04/25] mm/fbatch: lru bit set, no extra ref, while folio on per-cpu fbatch
+linux-block	973c6bdb7e0430255463fd5c86eb6030ed4bcd73	2026-08-24T06:58:54-07:00	Hugh Dickins	[PATCH 03/25] mm/fbatch: temporarily disable lazyfree and mlock+munlock batching
+linux-block	2621fad3390517c79308a1f0ba5110cdda418101	2026-08-24T06:55:18-07:00	Hugh Dickins	[PATCH 02/25] mm/fbatch: allow folios_put_refs() to skip xa_is_value() entries
+linux-block	713f48979a169b38cc730b14ad527be8d4c82007	2026-08-24T06:52:41-07:00	Hugh Dickins	[PATCH 01/25] mm/fbatch: remove !CONFIG_SMP special case of folio_activate()
+linux-block	a2c95f5c68db6b48fe372eb595d85a8bf479aa75	2026-08-24T06:49:31-07:00	Hugh Dickins	[PATCH 00/25] mm/fbatch: drain lru_add_drain() and _all()
+linux-block	92c5d5f1d0c654e57ee92408151f3a02f62fcd20	2026-08-24T15:49:37+02:00	Miklos Szeredi	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	145720b34d34ae079508cb281664bacaa3fe77cc	2026-08-24T15:32:48+02:00	Daan De Meyer via B4 Relay	[PATCH v2 2/2] nbd: drop stale partitions on NBD_CLEAR_SOCK
+linux-block	2b8be56b685c78b447a68f7386b87f98fe698ee2	2026-08-24T15:32:46+02:00	Daan De Meyer via B4 Relay	[PATCH v2 0/2] loop, nbd: drop partitions left behind by the GD_NEED_PART_SCAN removal
+linux-block	ff73b19102a7e382834cd7581efd462cb1ea119c	2026-08-24T15:32:47+02:00	Daan De Meyer via B4 Relay	[PATCH v2 1/2] loop: drop stale partitions on LOOP_CHANGE_FD
+linux-block	5f238cb6f91fc8f0b067bc4d7265494e39de3748	2026-08-24T08:31:01-05:00	Ming Lei	Re: [PATCH 0/2] ublk: fix force_abort leftover after quiesce recover
+linux-block	a9680ab022f863662bf01aacf9e86ba8ac507e9e	2026-08-24T14:29:29+01:00	Matthew Wilcox	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	64e972d7544307cc35913ada71a4ecce11d520db	2026-08-24T14:26:11+02:00	Uwe Kleine-König	Re: [PATCH v20 5/8] rust: rename `AlwaysRefCounted` to `RefCounted`.
+linux-block	3c65ec52997df49f08ab10776203ce7ea7766074	2026-08-24T13:36:22+02:00	Miguel Ojeda	Re: [PATCH v20 6/8] rust: Add missing SAFETY documentation for `ARef` example
+linux-block	23fab2078cc5a33f880e6e695cd6c63fdbf49563	2026-08-24T13:18:00+02:00	Andreas Hindborg	[PATCH v20 8/8] rust: page: add `from_raw()`
+linux-block	f3e9ec1be90bd7c1d5ae412fa415493fd6675823	2026-08-24T13:17:56+02:00	Andreas Hindborg	[PATCH v20 4/8] rust: page: convert to `Ownable`
+linux-block	1efb214ecf4e4d585dcfb6fa50ddd53188968ef9	2026-08-24T13:17:54+02:00	Andreas Hindborg	[PATCH v20 2/8] rust: types: Add Ownable/Owned types
+linux-block	31852ed44cca2ef5836144d0a57fc6fcdec1f01a	2026-08-24T13:17:58+02:00	Andreas Hindborg	[PATCH v20 6/8] rust: Add missing SAFETY documentation for `ARef` example
+linux-block	d2b3248728a1fc22ca22fde04426db3eae17bf09	2026-08-24T13:17:55+02:00	Andreas Hindborg	[PATCH v20 3/8] rust: implement `ForeignOwnable` for `Owned`
+linux-block	2110187f7cf2992d1e45420f14cb23661811b70a	2026-08-24T13:17:53+02:00	Andreas Hindborg	[PATCH v20 1/8] rust: alloc: add `KBox::into_non_null`
+linux-block	693934ec391831788f0d9bbed45c828df8e11b55	2026-08-24T13:17:59+02:00	Andreas Hindborg	[PATCH v20 7/8] rust: Add `OwnableRefCounted`
+linux-block	a4d5f8a02420eee4dc55f4d4f25d222768cfdaa6	2026-08-24T13:17:57+02:00	Andreas Hindborg	[PATCH v20 5/8] rust: rename `AlwaysRefCounted` to `RefCounted`.
+linux-block	1230b40f5a8572f9b3263c0ddcc2102fef320f20	2026-08-24T13:17:52+02:00	Andreas Hindborg	[PATCH v20 0/8] rust: add `Ownable` trait and `Owned` type
+linux-block	9ef7485967810d458cc80bb44bc9b08fb2c272d4	2026-08-24T19:55:06+09:00	Shin'ichiro Kawasaki	Re: [PATCH blktests] loop/014: Add test for backing file on loop device partition
+linux-block	8bf16cbf6750ee0812a35299871c81ad0d1f2bc2	2026-08-24T12:26:00+02:00	Noah Bergbauer	Re: Seagate Flex SMR
+linux-block	5cd5c7d43ad87de2389f5eb438847de2bcd1df97	2026-08-24T11:05:46+02:00	Miklos Szeredi	Re: [PATCH 2/7] fuse: Use filemap_invalidate_pages()
+linux-block	a67fb96a0bcf53599e78c78c508b333a2dc03d51	2026-08-24T09:50:44+02:00	Christoph Hellwig	Re: [PATCH blktests] block/{029,030,031}: relicense from GPL-2.0 to GPL-3.0+
+linux-block	ec9be86c51ac39868c3ea6d5094aab2dca67238b	2026-08-24T12:00:46+05:30	Kanchan Joshi	Re: [PATCH v4 1/6] fs: add write-stream management ioctls
+linux-block	635ba6fad50cc0026ba8b6dae1253471052ce035	2026-08-24T11:42:46+05:30	Nilay Shroff	Re: [PATCH 07/13] loop: Fix race conditions in loop_validate_file()
+linux-block	a0b6901e46a8148f5f0964aad62fa1f91e2c5e8e	2026-08-23T23:03:30-04:00	Theodore Tso	Re: Seagate Flex SMR
+linux-block	8cea61180176e2ef08fc03ffb7e56bbd60c9a22f	2026-08-24T10:36:12+09:00	Damien Le Moal	Re: Seagate Flex SMR
+linux-block	964428c96d5da8ddf77f78bf9765074bc61f7020	2026-08-23T18:45:49+02:00	Noah Bergbauer	Re: Seagate Flex SMR
+linux-block	42b72ee9da0827214f526487217ddac9343431ca	2026-08-23T17:57:11+02:00	Markus Elfring	Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+linux-block	653e26353c70078cbdae7552933e063b7b9c7104	2026-08-23T23:29:25+08:00	Yu Kuai	[RFC PATCH v3 6/6] blk-cgroup: make policy blkg creation nowait-safe
+linux-block	b06e92fcb66069ec1f7e9e9949819396a39f0b55	2026-08-23T23:29:24+08:00	Yu Kuai	[RFC PATCH v3 5/6] blk-cgroup: share blkg creation between lookup and config prep
+linux-block	922890b1cdba64409eea1ec14181dc81e529e757	2026-08-23T23:29:23+08:00	Yu Kuai	[RFC PATCH v3 4/6] blk-cgroup: allocate blkgs in blkg_create
+linux-block	b7e4e01bf2fc9e12d5aa8fc6b84891056521603a	2026-08-23T23:29:22+08:00	Yu Kuai	[RFC PATCH v3 3/6] blk-cgroup: protect blkgs with blkcg_mutex
+linux-block	f9287667d7d25a4e26450caa512a3382de442945	2026-08-23T23:29:21+08:00	Yu Kuai	[RFC PATCH v3 2/6] blk-throttle: protect throttle state with td lock
+linux-block	eb3438afbe132d8cfc370f9a3e25692c684bc7fe	2026-08-23T23:29:20+08:00	Yu Kuai	[RFC PATCH v3 1/6] blk-cgroup: call pd_free_fn() outside spinlocks
+linux-block	8fc9b272efe149efc438f0cbb752b7fb7c1f9367	2026-08-23T23:29:19+08:00	Yu Kuai	[RFC PATCH v3 0/6] blk-cgroup: protect blkgs with blkcg_mutex
+linux-block	acb2fb8134ffcf615f4371c53932fb113b53bd58	2026-08-23T23:09:20+09:00	Tetsuo Handa	Re: [block] general protection fault in lo_rw_aio
+linux-block	b286f8d995e74eef2b31fce34d603eb226a021b9	2026-08-23T06:33:37-07:00	syzbot	[syzbot] [block?] [trace?] KASAN: slab-out-of-bounds Read in seq_buf_putmem
+linux-block	40844b8c2753728c5710cd1b133124d56a7f9680	2026-08-23T21:30:45+08:00	Yu Kuai	[PATCH 3/3] blk-cgroup: move async bio punt state to blkcg
+linux-block	9a0a689c00555813f79c6be13a8096e00bea524a	2026-08-23T21:30:44+08:00	Yu Kuai	[PATCH 2/3] blk-cgroup: store blkcg in bio instead of blkg
+linux-block	14114b9acd177dc659beb4b9f086299451ee119b	2026-08-23T21:30:43+08:00	Yu Kuai	[PATCH 1/3] blk-cgroup: use a request_queue rhashtable for blkg lookup
+linux-block	e4934fd0602d93f27db2cfcc95d117e6d69937d1	2026-08-23T21:30:42+08:00	Yu Kuai	[PATCH 0/3] blk-cgroup: store blkcg in bio before blkcg_mutex conversion
+linux-block	e1bbde9078b48ecf89d71b9363d5391b94e53cd1	2026-08-23T21:24:57+09:00	Shin'ichiro Kawasaki	Re: [PATCH v2 0/2] Test multipath and marginal ports
+linux-block	da350ff8691544d1e1fe8a948e49e70fc7dff5bb	2026-08-23T20:17:57+09:00	Tetsuo Handa	[PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+linux-block	5ed3a9f296ed50ac8c9d477c34c77917723649c9	2026-08-23T12:25:24+03:00	Sagi Grimberg	Re: [PATCH RFC 4/5] block: move bio validation into __bio_split_to_limits
+linux-block	e1e9760daf4491f8979f21fa44bf08228bdb7951	2026-08-23T12:22:47+03:00	Sagi Grimberg	Re: [PATCH RFC 3/5] block: validate bio bounds in the queue entered context
+linux-block	68664e290fb30a8b31e04c835819d59783f5aab0	2026-08-23T12:10:06+03:00	Sagi Grimberg	Re: [PATCH RFC 2/5] block: fix invalid zone append status
+linux-block	9b26ee4f884e13fcf382b867118072421610b0ec	2026-08-23T12:09:52+03:00	Sagi Grimberg	Re: [PATCH RFC 1/5] blk-mq: fix status for unaligned bio
+linux-block	1983b561bd9fa327a14b15dede58d7b62668be4e	2026-08-22T06:50:46-07:00	Bart Van Assche	Re: [PATCH blktests] block/042,043, src/dio-offsets.c: relicense from GPL-2.0 to GPL-3.0+
+linux-block	d0800a23be021f5caccf2cb3d57aad5f7273d28e	2026-08-22T06:50:26-07:00	Bart Van Assche	Re: [PATCH blktests] block/{029,030,031}: relicense from GPL-2.0 to GPL-3.0+
+linux-block	7f6cefa74dcd3039c5d97222aff67dfdcfe92d9f	2026-08-22T02:26:30-05:00	Ming Lei	Re: blktests: call for agreement to relicense GPL-2.0 files
+linux-block	d6d2bcccd134b475e55f8b6f510f58d3a9be822f	2026-08-22T15:29:03+09:00	Damien Le Moal	Re: Seagate Flex SMR
+linux-block	3063a37298b96e2afb0f063b509abca3f49be75f	2026-08-21T11:25:10Z	Jane Wells	Complete CSI Takeoff Services for Your Next Build
+linux-block	71dd01ebc5e6865f9fd67066a77cf5928ab12ac9	2026-08-22T10:02:35+09:00	Tetsuo Handa	Re: [block] general protection fault in lo_rw_aio
+...
+# Full metadata: 20256 lines in all_mails.tsv
+# Format: list<TAB>hash<TAB>date<TAB>author<TAB>subject
