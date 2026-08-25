@@ -1,0 +1,9 @@
+# Raw data from lore.kernel.org crawling (git clones, mbox files)
+.raw/
+
+# Editor files
+*.swp
+*.swo
+*~
+.DS_Store
+.raw/
