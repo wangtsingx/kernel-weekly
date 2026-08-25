@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内核邮件列表周刊 | Kernel Mailing List Weekly</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --red: #f85149;
+      --orange: #d29922;
+      --yellow: #e3b341;
+      --green: #3fb950;
+      --radius: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+
+    /* Header */
+    header { text-align: center; padding: 3rem 1rem 2rem; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    header h1 .icon { margin-right: 0.5rem; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Stats bar */
+    .stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
+    .stat-chip { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; }
+    .stat-chip strong { color: var(--accent); }
+
+    /* Issue list */
+    .issue-list { margin-top: 2rem; }
+    .issue-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .issue-card:hover { border-color: var(--accent); }
+    .issue-card h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
+    .issue-card h2 a { color: var(--text); text-decoration: none; }
+    .issue-card h2 a:hover { color: var(--accent); text-decoration: underline; }
+    .issue-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .issue-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+
+    /* Issue body preview (collapsible) */
+    .issue-body {
+      max-height: 200px;
+      overflow: hidden;
+      position: relative;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: 0.75rem;
+    }
+    .issue-body.expanded { max-height: none; }
+    .issue-body .fade {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+      background: linear-gradient(transparent, var(--card));
+      pointer-events: none;
+    }
+    .issue-body.expanded .fade { display: none; }
+    .issue-body pre { white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem; font-family: 'SF Mono', 'Cascadia Code', monospace; }
+    .issue-body img { max-width: 100%; }
+
+    .expand-btn {
+      background: none; border: 1px solid var(--border); color: var(--accent);
+      padding: 0.3rem 1rem; border-radius: 4px; cursor: pointer;
+      font-size: 0.85rem; margin-top: 0.5rem;
+    }
+    .expand-btn:hover { background: var(--border); }
+
+    /* Labels */
+    .label {
+      display: inline-block; padding: 0.15rem 0.6rem; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+    .label-weekly { background: #1f6feb; color: #fff; }
+
+    /* Loading & empty */
+    .loading, .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .spinner {
+      display: inline-block; width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* Search */
+    .search-box {
+      width: 100%; padding: 0.6rem 1rem; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-size: 0.9rem; margin-bottom: 1.5rem;
+    }
+    .search-box:focus { outline: none; border-color: var(--accent); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .issue-card { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><span class="icon">🔍</span>内核邮件列表周刊</h1>
+    <p>自动爬取 lore.kernel.org 邮件列表，AI 分析问题类型、严重程度和修复方案</p>
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-chip">周刊数量: <strong id="stat-count">-</strong></div>
+      <div class="stat-chip">最近更新: <strong id="stat-latest">-</strong></div>
+      <div class="stat-chip">数据源: <strong>lore.kernel.org</strong></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <input type="text" class="search-box" id="search" placeholder="搜索周刊标题或内容…" oninput="filterIssues()">
+    <div class="issue-list" id="issue-list">
+      <div class="loading"><div class="spinner"></div><p style="margin-top:1rem">正在加载周刊…</p></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>由 <a href="https://github.com/wangtsingx/kernel-weekly" target="_blank">Multica autopilot</a> 自动生成 · 数据来源 <a href="https://lore.kernel.org" target="_blank">lore.kernel.org</a></p>
+  </footer>
+
+  <script>
+    const REPO = 'wangtsingx/kernel-weekly';
+    const API = `https://api.github.com/repos/${REPO}/issues`;
+    let allIssues = [];
+
+    async function loadIssues() {
+      try {
+        // Fetch issues sorted by newest, with label filter optional
+        const url = `${API}?state=all&per_page=100&sort=created&direction=desc`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const issues = await res.json();
+        // Filter: only issues (not PRs), containing "周刊" in title
+        allIssues = issues.filter(i => !i.pull_request && i.title.includes('周刊'));
+
+        if (allIssues.length === 0) {
+          document.getElementById('issue-list').innerHTML =
+            '<div class="empty"><p>暂无周刊。首次运行后将自动出现。</p></div>';
+          return;
+        }
+
+        // Stats
+        document.getElementById('stat-count').textContent = allIssues.length;
+        const latest = allIssues[0];
+        document.getElementById('stat-latest').textContent =
+          new Date(latest.created_at).toISOString().slice(0, 10);
+
+        renderIssues(allIssues);
+      } catch (err) {
+        document.getElementById('issue-list').innerHTML =
+          `<div class="empty"><p>加载失败: ${err.message}</p><p style="margin-top:0.5rem;font-size:0.85rem">GitHub API 速率限制可能已触发，请稍后刷新。</p></div>`;
+      }
+    }
+
+    function renderIssues(issues) {
+      const list = document.getElementById('issue-list');
+      list.innerHTML = issues.map(issue => {
+        const date = new Date(issue.created_at).toISOString().slice(0, 10);
+        const bodyHtml = escapeHtml(issue.body || '(无内容)');
+        const labels = issue.labels.map(l =>
+          `<span class="label" style="background:#${l.color};color:#${l.color === 'ffffff' ? '000' : 'fff'}">${escapeHtml(l.name)}</span>`
+        ).join(' ');
+
+        return `
+        <div class="issue-card" data-title="${escapeHtml(issue.title).toLowerCase()}" data-body="${bodyHtml.toLowerCase()}">
+          <h2><a href="${issue.html_url}" target="_blank">${escapeHtml(issue.title)}</a></h2>
+          <div class="issue-meta">
+            <span>📅 ${date}</span>
+            <span>👤 ${escapeHtml(issue.user.login)}</span>
+            <span>💬 ${issue.comments}</span>
+            ${labels ? '<span>' + labels + '</span>' : ''}
+            <span>#${issue.number}</span>
+          </div>
+          <div class="issue-body" id="body-${issue.number}">
+            ${renderMarkdown(issue.body || '(无内容)')}
+            <div class="fade"></div>
+          </div>
+          <button class="expand-btn" onclick="toggleBody(${issue.number}, this)">展开全文 ↓</button>
+        </div>`;
+      }).join('');
+    }
+
+    function toggleBody(num, btn) {
+      const body = document.getElementById('body-' + num);
+      if (body.classList.contains('expanded')) {
+        body.classList.remove('expanded');
+        btn.textContent = '展开全文 ↓';
+      } else {
+        body.classList.add('expanded');
+        btn.textContent = '收起 ↑';
+      }
+    }
+
+    function filterIssues() {
+      const q = document.getElementById('search').value.toLowerCase();
+      if (!q) { renderIssues(allIssues); return; }
+      const filtered = allIssues.filter(i =>
+        i.title.toLowerCase().includes(q) || (i.body || '').toLowerCase().includes(q)
+      );
+      if (filtered.length === 0) {
+        document.getElementById('issue-list').innerHTML =
+          '<div class="empty"><p>未找到匹配的周刊。</p></div>';
+      } else {
+        renderIssues(filtered);
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Minimal markdown renderer (headings, bold, lists, tables, links, code)
+    function renderMarkdown(md) {
+      let html = escapeHtml(md);
+      // Code blocks
+      html = html.replace(/```[\s\S]*?```/g, m => '<pre>' + m.replace(/```/g, '') + '</pre>');
+      // Tables
+      html = html.replace(/^(\|.+\|)\n(\|[-: |]+\|)\n((?:\|.+\|\n?)+)/gm, (match, header, sep, rows) => {
+        const th = header.split('|').filter(c => c.trim()).map(c => '<th>' + c.trim() + '</th>').join('');
+        const tds = rows.trim().split('\n').map(row =>
+          '<tr>' + row.split('|').filter(c => c.trim()).map(c => '<td>' + c.trim() + '</td>').join('') + '</tr>'
+        ).join('');
+        return '<table style="width:100%;border-collapse:collapse;margin:0.5rem 0;font-size:0.85rem"><thead><tr>' + th + '</tr></thead><tbody>' + tds + '</tbody></table>';
+      });
+      // Headings
+      html = html.replace(/^### (.+)$/gm, '<h4 style="margin:0.8rem 0 0.4rem;color:var(--accent)">$1</h4>');
+      html = html.replace(/^## (.+)$/gm, '<h3 style="margin:1rem 0 0.5rem;color:var(--accent)">$1</h3>');
+      html = html.replace(/^# (.+)$/gm, '<h2 style="margin:1rem 0 0.5rem">$1</h2>');
+      // Bold
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // Links
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--accent)">$1</a>');
+      // Blockquotes
+      html = html.replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid var(--accent);padding-left:1rem;color:var(--text-muted);margin:0.5rem 0">$1</blockquote>');
+      // Horizontal rule
+      html = html.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">');
+      // Lists
+      html = html.replace(/^- (.+)$/gm, '<li style="margin-left:1.5rem">$1</li>');
+      html = html.replace(/^(\d+)\. (.+)$/gm, '<li style="margin-left:1.5rem">$2</li>');
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.85em">$1</code>');
+      // Line breaks
+      html = html.replace(/\n/g, '<br>\n');
+      return html;
+    }
+
+    loadIssues();
+  </script>
+</body>
+</html>
