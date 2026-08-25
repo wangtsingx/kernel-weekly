@@ -9,6 +9,7 @@
       --bg: #F5F4ED;
       --card: #FFFFFF;
       --border: #E5E3DC;
+      --border-soft: #EFEDE6;
       --text: #3D3929;
       --text-muted: #8B8478;
       --accent: #D97757;
@@ -20,6 +21,8 @@
       --green: #5A7A4A;
       --code-bg: #F7F6F2;
       --table-stripe: #FAF9F6;
+      --sidebar-w: 280px;
+      --toc-w: 220px;
       --radius: 10px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,62 +31,218 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
     }
-    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
 
-    /* Header */
-    header { text-align: center; padding: 3rem 1rem 2rem; border-bottom: 1px solid var(--border); }
-    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
-    header h1 .icon { margin-right: 0.5rem; }
-    header p { color: var(--text-muted); font-size: 0.95rem; }
+    /* ── Sidebar (left drawer) ────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.5rem 1rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .sidebar-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+    .sidebar-stats {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .sidebar-stat {
+      background: var(--accent-soft);
+      border-radius: 12px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+    }
+    .sidebar-stat strong { color: var(--accent-darker); }
 
-    /* Stats bar */
-    .stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
-    .stat-chip { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; }
-    .stat-chip strong { color: var(--accent); }
+    .sidebar-search {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .sidebar-search input {
+      width: 100%;
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .sidebar-search input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(217,119,87,0.12);
+    }
 
-    /* Issue list */
-    .issue-list { margin-top: 2rem; }
-    .issue-card {
+    .issue-nav { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
+    .nav-item {
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .nav-item:hover { background: var(--accent-soft); }
+    .nav-item.active {
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
+    }
+    .nav-item-title { font-size: 0.85rem; font-weight: 500; line-height: 1.35; }
+    .nav-item.active .nav-item-title { color: var(--accent-darker); }
+    .nav-item-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    .sidebar-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .sidebar-footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Mobile toggle button ─────────────────────────── */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 200;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
+      border-radius: 8px;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    /* ── Main area ────────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ── Content area (center) ────────────────────────── */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 2.5rem;
+      min-width: 0;
+    }
+    .content-area-inner {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* Article header */
+    .article-header {
       margin-bottom: 1.5rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
     }
-    .issue-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(217,119,87,0.12); }
-    .issue-card h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
-    .issue-card h2 a { color: var(--text); text-decoration: none; }
-    .issue-card h2 a:hover { color: var(--accent); text-decoration: underline; }
-    .issue-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-    .issue-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .article-header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .article-header h1 a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .article-header h1 a:hover { color: var(--accent); }
+    .article-meta {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .article-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .label {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
 
-    /* Issue body preview (collapsible) */
-    .issue-body {
-      max-height: 240px;
-      overflow: hidden;
-      position: relative;
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-      margin-top: 0.75rem;
+    /* ── TOC (right) ──────────────────────────────────── */
+    .toc-panel {
+      width: var(--toc-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1rem 2rem 1.5rem;
+      border-left: 1px solid var(--border);
+      background: var(--card);
     }
-    .issue-body.expanded { max-height: none; }
-    .issue-body .fade {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-      background: linear-gradient(transparent, var(--card));
-      pointer-events: none;
-      z-index: 1;
+    .toc-panel h3 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
     }
-    .issue-body.expanded .fade { display: none; }
+    .toc-list { list-style: none; }
+    .toc-item {
+      padding: 0.3rem 0;
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-left: 2px solid transparent;
+      padding-left: 0.6rem;
+      transition: color 0.15s, border-color 0.15s;
+      line-height: 1.4;
+    }
+    .toc-item:hover { color: var(--accent); }
+    .toc-item.active {
+      color: var(--accent-darker);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+    .toc-item.h2 { padding-left: 0.6rem; }
+    .toc-item.h3 { padding-left: 1.3rem; font-size: 0.78rem; }
+    .toc-item.h4 { padding-left: 2rem; font-size: 0.75rem; }
+    .toc-empty {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
 
-    /* Markdown content rendering (GitHub-like) */
-    .md-content { position: relative; }
+    /* ── Markdown content ────────────────────────────── */
     .md-content > *:first-child { margin-top: 0; }
-    .md-content h1 { font-size: 1.6rem; font-weight: 700; margin: 1.5rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
-    .md-content h2 { font-size: 1.3rem; font-weight: 600; margin: 1.5rem 0 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); color: var(--text); }
-    .md-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.2rem 0 0.5rem; color: var(--accent-darker); }
-    .md-content h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent-darker); }
+    .md-content h1 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); scroll-margin-top: 1rem; }
+    .md-content h2 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); color: var(--text); scroll-margin-top: 1rem; }
+    .md-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.2rem 0 0.5rem; color: var(--accent-darker); scroll-margin-top: 1rem; }
+    .md-content h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent-darker); scroll-margin-top: 1rem; }
     .md-content p { margin: 0.5rem 0; }
     .md-content ul, .md-content ol { margin: 0.5rem 0; padding-left: 1.8rem; }
     .md-content li { margin: 0.25rem 0; }
@@ -136,69 +295,102 @@
     .md-content table tbody tr:nth-child(even) { background: var(--table-stripe); }
     .md-content img { max-width: 100%; border-radius: 4px; }
 
-    .expand-btn {
-      background: none; border: 1px solid var(--border); color: var(--accent);
-      padding: 0.3rem 1rem; border-radius: 6px; cursor: pointer;
-      font-size: 0.85rem; margin-top: 0.5rem;
+    /* ── Loading & empty ──────────────────────────────── */
+    .loading, .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
     }
-    .expand-btn:hover { background: var(--accent-soft); }
-
-    /* Labels */
-    .label {
-      display: inline-block; padding: 0.15rem 0.6rem; border-radius: 20px;
-      font-size: 0.75rem; font-weight: 600;
-    }
-    .label-weekly { background: var(--accent); color: #fff; }
-
-    /* Loading & empty */
-    .loading, .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
     .spinner {
-      display: inline-block; width: 32px; height: 32px;
-      border: 3px solid var(--border); border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Footer */
-    footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 2rem; }
-    footer a { color: var(--accent); text-decoration: none; }
-
-    /* Search */
-    .search-box {
-      width: 100%; padding: 0.6rem 1rem; background: var(--card);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      color: var(--text); font-size: 0.9rem; margin-bottom: 1.5rem;
+    /* ── Overlay (mobile sidebar) ──────────────────────── */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 90;
     }
-    .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(217,119,87,0.15); }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.5rem; }
-      .issue-card { padding: 1rem; }
+    /* ── Layout: content + toc side by side ───────────── */
+    .body-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 1100px) {
+      .toc-panel { display: none; }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: block; }
+      .overlay.open { display: block; }
+      .content-area { padding: 2.5rem 1rem 2rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1><span class="icon">🔍</span>内核邮件列表周刊</h1>
-    <p>自动爬取 lore.kernel.org 邮件列表，AI 分析问题类型、严重程度和修复方案</p>
-    <div class="stats-bar" id="stats-bar">
-      <div class="stat-chip">周刊数量: <strong id="stat-count">-</strong></div>
-      <div class="stat-chip">最近更新: <strong id="stat-latest">-</strong></div>
-      <div class="stat-chip">数据源: <strong>lore.kernel.org</strong></div>
-    </div>
-  </header>
+  <!-- Mobile menu toggle -->
+  <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-  <div class="container">
-    <input type="text" class="search-box" id="search" placeholder="搜索周刊标题或内容…" oninput="filterIssues()">
-    <div class="issue-list" id="issue-list">
-      <div class="loading"><div class="spinner"></div><p style="margin-top:1rem">正在加载周刊…</p></div>
+  <!-- Left sidebar: issue list -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1><span>🔍</span>内核邮件列表周刊</h1>
+      <p>自动爬取 lore.kernel.org · AI 分析</p>
+      <div class="sidebar-stats">
+        <div class="sidebar-stat">共 <strong id="stat-count">-</strong> 期</div>
+        <div class="sidebar-stat">最新 <strong id="stat-latest">-</strong></div>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="search" placeholder="搜索周刊…" oninput="filterIssues()">
+    </div>
+    <nav class="issue-nav" id="issue-nav">
+      <div class="loading"><div class="spinner"></div></div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="https://github.com/wangtsingx/kernel-weekly" target="_blank">GitHub 仓库</a> · <a href="https://lore.kernel.org" target="_blank">lore.kernel.org</a>
+    </div>
+  </aside>
+
+  <!-- Main area: content + toc -->
+  <div class="main">
+    <div class="body-layout">
+      <!-- Center: article content -->
+      <main class="content-area" id="content-area">
+        <div class="content-area-inner" id="content-inner">
+          <div class="loading"><div class="spinner"></div><p style="margin-top:1rem">正在加载周刊…</p></div>
+        </div>
+      </main>
+
+      <!-- Right: table of contents -->
+      <aside class="toc-panel" id="toc-panel">
+        <h3>📑 目录</h3>
+        <ul class="toc-list" id="toc-list">
+          <li class="toc-empty">选择一期周刊查看目录</li>
+        </ul>
+      </aside>
     </div>
   </div>
-
-  <footer>
-    <p>由 <a href="https://github.com/wangtsingx/kernel-weekly" target="_blank">Multica autopilot</a> 自动生成 · 数据来源 <a href="https://lore.kernel.org" target="_blank">lore.kernel.org</a></p>
-  </footer>
 
   <!-- marked.js for markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -208,10 +400,11 @@
     const REPO = 'wangtsingx/kernel-weekly';
     const API = `https://api.github.com/repos/${REPO}/issues`;
     let allIssues = [];
+    let currentIssue = null;
 
-    // Configure marked
     marked.setOptions({ breaks: true, gfm: true });
 
+    // ── Load issues from GitHub API ───────────────────
     async function loadIssues() {
       try {
         const url = `${API}?state=all&per_page=100&sort=created&direction=desc`;
@@ -221,75 +414,150 @@
         allIssues = issues.filter(i => !i.pull_request && i.title.includes('周刊'));
 
         if (allIssues.length === 0) {
-          document.getElementById('issue-list').innerHTML =
-            '<div class="empty"><p>暂无周刊。首次运行后将自动出现。</p></div>';
+          document.getElementById('issue-nav').innerHTML = '<div class="empty"><p>暂无周刊</p></div>';
+          document.getElementById('content-inner').innerHTML = '<div class="empty"><p>首次运行后将自动出现。</p></div>';
           return;
         }
 
         document.getElementById('stat-count').textContent = allIssues.length;
-        const latest = allIssues[0];
         document.getElementById('stat-latest').textContent =
-          new Date(latest.created_at).toISOString().slice(0, 10);
+          new Date(allIssues[0].created_at).toISOString().slice(0, 10);
 
-        renderIssues(allIssues);
+        renderNav(allIssues);
+        selectIssue(allIssues[0]);
       } catch (err) {
-        document.getElementById('issue-list').innerHTML =
+        document.getElementById('issue-nav').innerHTML = '';
+        document.getElementById('content-inner').innerHTML =
           '<div class="empty"><p>加载失败: ' + escapeHtml(err.message) + '</p><p style="margin-top:0.5rem;font-size:0.85rem">GitHub API 速率限制可能已触发，请稍后刷新。</p></div>';
       }
     }
 
-    function renderIssues(issues) {
-      const list = document.getElementById('issue-list');
-      list.innerHTML = issues.map(issue => {
+    // ── Render sidebar navigation ─────────────────────
+    function renderNav(issues) {
+      const nav = document.getElementById('issue-nav');
+      nav.innerHTML = issues.map((issue, idx) => {
         const date = new Date(issue.created_at).toISOString().slice(0, 10);
-        const bodyHtml = renderMarkdown(issue.body || '(无内容)');
-        const labels = issue.labels.map(l =>
-          '<span class="label" style="background:#' + l.color + ';color:#' + (l.color === 'ffffff' ? '333' : 'fff') + '">' + escapeHtml(l.name) + '</span>'
-        ).join(' ');
-
-        return '<div class="issue-card" data-title="' + escapeHtml(issue.title.toLowerCase()) + '" data-body="' + escapeHtml((issue.body || '').toLowerCase()) + '">' +
-          '<h2><a href="' + issue.html_url + '" target="_blank">' + escapeHtml(issue.title) + '</a></h2>' +
-          '<div class="issue-meta">' +
-            '<span>📅 ' + date + '</span>' +
-            '<span>👤 ' + escapeHtml(issue.user.login) + '</span>' +
-            '<span>💬 ' + issue.comments + '</span>' +
-            (labels ? '<span>' + labels + '</span>' : '') +
-            '<span>#' + issue.number + '</span>' +
-          '</div>' +
-          '<div class="issue-body" id="body-' + issue.number + '">' +
-            '<div class="md-content">' + bodyHtml + '</div>' +
-            '<div class="fade"></div>' +
-          '</div>' +
-          '<button class="expand-btn" onclick="toggleBody(' + issue.number + ', this)">展开全文 ↓</button>' +
+        return '<div class="nav-item' + (idx === 0 ? ' active' : '') + '" data-idx="' + idx + '" onclick="selectIssue(allIssues[' + idx + '], ' + idx + ')">' +
+          '<div class="nav-item-title">' + escapeHtml(issue.title) + '</div>' +
+          '<div class="nav-item-date">📅 ' + date + ' · # ' + issue.number + '</div>' +
         '</div>';
       }).join('');
     }
 
-    function toggleBody(num, btn) {
-      const body = document.getElementById('body-' + num);
-      if (body.classList.contains('expanded')) {
-        body.classList.remove('expanded');
-        btn.textContent = '展开全文 ↓';
+    // ── Select an issue and render it ──────────────────
+    function selectIssue(issue, idx) {
+      currentIssue = issue;
+
+      // Update nav active state
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      if (idx !== undefined) {
+        const navItems = document.querySelectorAll('.nav-item');
+        if (navItems[idx]) navItems[idx].classList.add('active');
       } else {
-        body.classList.add('expanded');
-        btn.textContent = '收起 ↑';
+        // Find by issue number
+        const found = allIssues.findIndex(i => i.number === issue.number);
+        if (found >= 0) {
+          const navItems = document.querySelectorAll('.nav-item');
+          if (navItems[found]) navItems[found].classList.add('active');
+        }
       }
+
+      // Render article
+      const date = new Date(issue.created_at).toISOString().slice(0, 10);
+      const labels = issue.labels.map(l =>
+        '<span class="label" style="background:#' + l.color + ';color:#' + (l.color === 'ffffff' ? '333' : 'fff') + '">' + escapeHtml(l.name) + '</span>'
+      ).join(' ');
+
+      const bodyHtml = renderMarkdown(issue.body || '(无内容)');
+
+      document.getElementById('content-inner').innerHTML =
+        '<div class="article-header">' +
+          '<h1><a href="' + issue.html_url + '" target="_blank">' + escapeHtml(issue.title) + '</a></h1>' +
+          '<div class="article-meta">' +
+            '<span>📅 ' + date + '</span>' +
+            '<span>👤 ' + escapeHtml(issue.user.login) + '</span>' +
+            '<span>💬 ' + issue.comments + ' 评论</span>' +
+            (labels ? '<span>' + labels + '</span>' : '') +
+            '<span>#' + issue.number + '</span>' +
+            '<span><a href="' + issue.html_url + '" target="_blank" style="color:var(--accent)">在 GitHub 查看 →</a></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="md-content" id="md-content">' + bodyHtml + '</div>';
+
+      // Build TOC from rendered headings
+      buildTOC();
+
+      // Close sidebar on mobile
+      if (window.innerWidth <= 768) toggleSidebar(false);
+
+      // Scroll to top
+      document.getElementById('content-area').scrollTop = 0;
     }
 
+    // ── Build table of contents from headings ──────────
+    function buildTOC() {
+      const content = document.getElementById('md-content');
+      if (!content) return;
+      const headings = content.querySelectorAll('h1, h2, h3, h4');
+      const tocList = document.getElementById('toc-list');
+
+      if (headings.length === 0) {
+        tocList.innerHTML = '<li class="toc-empty">无目录</li>';
+        return;
+      }
+
+      // Assign IDs to headings for anchor navigation
+      headings.forEach((h, i) => {
+        if (!h.id) h.id = 'heading-' + i;
+      });
+
+      tocList.innerHTML = Array.from(headings).map(h => {
+        const level = h.tagName.toLowerCase();
+        const text = h.textContent.replace(/^[#*]+\s*/, '').trim();
+        if (!text || text.length > 60) return ''; // skip empty or too-long headings
+        return '<li class="toc-item ' + level + '" onclick="scrollToHeading(\'' + h.id + '\', this)">' + escapeHtml(text) + '</li>';
+      }).filter(Boolean).join('');
+    }
+
+    // ── Scroll to a heading ────────────────────────────
+    function scrollToHeading(id, el) {
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      // Update active TOC item
+      document.querySelectorAll('.toc-item').forEach(t => t.classList.remove('active'));
+      if (el) el.classList.add('active');
+    }
+
+    // ── Filter issues in sidebar ───────────────────────
     function filterIssues() {
       const q = document.getElementById('search').value.toLowerCase();
-      if (!q) { renderIssues(allIssues); return; }
+      if (!q) { renderNav(allIssues); return; }
       const filtered = allIssues.filter(i =>
         i.title.toLowerCase().includes(q) || (i.body || '').toLowerCase().includes(q)
       );
       if (filtered.length === 0) {
-        document.getElementById('issue-list').innerHTML =
-          '<div class="empty"><p>未找到匹配的周刊。</p></div>';
+        document.getElementById('issue-nav').innerHTML = '<div class="empty"><p>未找到匹配</p></div>';
       } else {
-        renderIssues(filtered);
+        renderNav(filtered);
       }
     }
 
+    // ── Toggle sidebar (mobile) ────────────────────────
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      if (open === false) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      } else {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+      }
+    }
+
+    // ── Utilities ──────────────────────────────────────
     function escapeHtml(str) {
       const div = document.createElement('div');
       div.textContent = str;
@@ -300,9 +568,27 @@
       const raw = marked.parse(md);
       return DOMPurify.sanitize(raw, {
         ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','hr','ul','ol','li','blockquote','pre','code','a','strong','em','del','table','thead','tbody','tr','th','td','img','span','div','sup'],
-        ALLOWED_ATTR: ['href','src','alt','title','style','colspan','rowspan','target','rel']
+        ALLOWED_ATTR: ['href','src','alt','title','style','colspan','rowspan','target','rel','id']
       });
     }
+
+    // ── Scroll spy: highlight active TOC item ──────────
+    let scrollTimer = null;
+    document.getElementById('content-area').addEventListener('scroll', () => {
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        const headings = document.querySelectorAll('#md-content h1, #md-content h2, #md-content h3, #md-content h4');
+        if (headings.length === 0) return;
+        const scrollTop = document.getElementById('content-area').scrollTop;
+        let activeIdx = 0;
+        headings.forEach((h, i) => {
+          if (h.offsetTop - 20 <= scrollTop) activeIdx = i;
+        });
+        const tocItems = document.querySelectorAll('.toc-item');
+        tocItems.forEach(t => t.classList.remove('active'));
+        if (tocItems[activeIdx]) tocItems[activeIdx].classList.add('active');
+      }, 100);
+    });
 
     loadIssues();
   </script>
