@@ -6,17 +6,18 @@
   <title>内核邮件列表周刊 | Kernel Mailing List Weekly</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --text-muted: #8b949e;
-      --accent: #58a6ff;
-      --red: #f85149;
-      --orange: #d29922;
-      --yellow: #e3b341;
-      --green: #3fb950;
-      --radius: 8px;
+      --bg: #F5F4ED;
+      --card: #FFFFFF;
+      --border: #E5E3DC;
+      --text: #3D3929;
+      --text-muted: #8B8478;
+      --accent: #D97757;
+      --accent-soft: #F3EDE8;
+      --red: #C04A3B;
+      --orange: #C97B35;
+      --yellow: #B89220;
+      --green: #5A7A4A;
+      --radius: 10px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -48,7 +49,7 @@
       margin-bottom: 1.5rem;
       transition: border-color 0.2s;
     }
-    .issue-card:hover { border-color: var(--accent); }
+    .issue-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(217,119,87,0.12); }
     .issue-card h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
     .issue-card h2 a { color: var(--text); text-decoration: none; }
     .issue-card h2 a:hover { color: var(--accent); text-decoration: underline; }
@@ -79,14 +80,14 @@
       padding: 0.3rem 1rem; border-radius: 4px; cursor: pointer;
       font-size: 0.85rem; margin-top: 0.5rem;
     }
-    .expand-btn:hover { background: var(--border); }
+    .expand-btn:hover { background: var(--accent-soft); }
 
     /* Labels */
     .label {
       display: inline-block; padding: 0.15rem 0.6rem; border-radius: 20px;
       font-size: 0.75rem; font-weight: 600;
     }
-    .label-weekly { background: #1f6feb; color: #fff; }
+    .label-weekly { background: var(--accent); color: #fff; }
 
     /* Loading & empty */
     .loading, .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
@@ -107,7 +108,7 @@
       border: 1px solid var(--border); border-radius: var(--radius);
       color: var(--text); font-size: 0.9rem; margin-bottom: 1.5rem;
     }
-    .search-box:focus { outline: none; border-color: var(--accent); }
+    .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(217,119,87,0.15); }
 
     /* Responsive */
     @media (max-width: 600px) {
@@ -260,7 +261,7 @@
       html = html.replace(/^- (.+)$/gm, '<li style="margin-left:1.5rem">$1</li>');
       html = html.replace(/^(\d+)\. (.+)$/gm, '<li style="margin-left:1.5rem">$2</li>');
       // Inline code
-      html = html.replace(/`([^`]+)`/g, '<code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.85em">$1</code>');
+    html = html.replace(/`([^`]+)`/g, '<code style="background:var(--accent-soft);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.85em;color:var(--accent)">$1</code>');
       // Line breaks
       html = html.replace(/\n/g, '<br>\n');
       return html;
