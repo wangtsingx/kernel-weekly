@@ -1,8 +1,53 @@
 # Raw Mail Summary - 2026-08-25
-# Source: lore.kernel.org
+# Source: lore.kernel.org (public-inbox git repos)
 # Lists: linux-kernel netdev linux-mm linux-block linux-pm linux-security-module stable regressions
 # Period: 2026-08-18 to 2026-08-25
-# Total subjects: 0
+# Crawl method: GIT_PROTOCOL=version=2 git clone --filter=blob:none --shallow-since="2026-08-18"
+# Total emails: 20,256
+# Total subjects (original posts): 10,265
 
-## All Subjects
+## Per-List Counts
 
+linux-kernel: 12,072 total, 5,512 original, 4,894 patches
+stable: 3,912 total, 2,898 original, 2,778 patches
+netdev: 1,940 total, 838 original, 777 patches
+linux-mm: 1,408 total, 539 original, 467 patches
+linux-pm: 436 total, 244 original, 225 patches
+linux-block: 283 total, 134 original, 113 patches
+linux-security-module: 120 total, 39 original, 36 patches
+regressions: 85 total, 21 original, 6 patches
+
+## Key Metrics
+
+- RFC emails: 816
+- Bug reports: 142
+- CVE mentions: 3 (CVE-2025-38616, CVE-2026-64561, CVE-2026-74484)
+- Regression reports (user): 6
+- syzbot unique reports: 96
+- GIT PULL requests: 83+
+- UAF mentions: 450
+- KASAN reports: 129
+- Deadlock/lockdep: 59
+
+## Stable Releases This Week
+
+5.10.265 (389 patches), 5.10.266 (235 patches)
+5.15.216 (456 patches), 5.15.217 (272 patches)
+6.1.183 (609 patches), 6.1.184 (303 patches)
+6.6.152 (156 patches), 6.6.153-rc1 (166 patches), 6.6.153-rc2 (160 patches)
+6.12.104 (181 patches), 6.12.105 (220 patches)
+6.18.45 (250 patches), 6.18.46 (217 patches)
+7.1.10 (228 patches)
+
+## Top Authors
+
+Greg Kroah-Hartman: 1756
+Sasha Levin: 306
+syzbot: 243
+Jakub Kicinski: 241
+Konrad Dybcio: 228
+Krzysztof Kozlowski: 201
+David Hildenbrand: 192
+Abel Vesa: 180
+Lorenzo Stoakes: 158
+Jonathan Cameron: 136
